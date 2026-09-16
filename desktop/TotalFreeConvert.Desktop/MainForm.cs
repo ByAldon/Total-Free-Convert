@@ -1,5 +1,6 @@
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
+using System.Diagnostics;
 
 namespace TotalFreeConvert.Desktop;
 
@@ -17,7 +18,7 @@ internal sealed class MainForm : Form
         StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = new Size(760, 620);
         ClientSize = new Size(1180, 780);
-        BackColor = Color.FromArgb(25, 25, 25);
+        BackColor = Color.White;
         if (smokeTest)
         {
             Opacity = 0;
@@ -60,9 +61,16 @@ internal sealed class MainForm : Form
             core.NavigationStarting += (_, args) =>
             {
                 if (!args.Uri.StartsWith(AppOrigin, StringComparison.OrdinalIgnoreCase))
+                {
                     args.Cancel = true;
+                    OpenAllowedExternalUrl(args.Uri);
+                }
             };
-            core.NewWindowRequested += (_, args) => args.Handled = true;
+            core.NewWindowRequested += (_, args) =>
+            {
+                args.Handled = true;
+                OpenAllowedExternalUrl(args.Uri);
+            };
             core.DownloadStarting += HandleDownloadStarting;
             if (smokeTest)
                 core.NavigationCompleted += (_, args) => FinishSmokeTest(args.IsSuccess ? 0 : 3);
@@ -76,6 +84,19 @@ internal sealed class MainForm : Form
         {
             ShowStartupError($"TFC could not start.\n\n{ex.Message}");
         }
+    }
+
+    private static void OpenAllowedExternalUrl(string? url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri)) return;
+        if (uri.Scheme != Uri.UriSchemeHttps) return;
+        bool allowed = uri.Host.Equals("www.clipsnap.com", StringComparison.OrdinalIgnoreCase)
+            || uri.Host.Equals("clipsnap.com", StringComparison.OrdinalIgnoreCase)
+            || uri.Host.Equals("www.propdf.com", StringComparison.OrdinalIgnoreCase)
+            || uri.Host.Equals("propdf.com", StringComparison.OrdinalIgnoreCase);
+        if (!allowed) return;
+        try { Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true }); }
+        catch { }
     }
 
     private void HandleDownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs args)

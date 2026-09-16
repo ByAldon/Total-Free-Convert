@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="Private image conversion in your browser. No uploads, accounts or database.">
   <meta name="twitter:image" content="assets/tfc-social-preview.png">
   <title>Total Free Convert — Image Converter</title>
-  <link rel="icon" type="image/svg+xml" href="assets/tfc-icon.svg">
+  <link rel="icon" type="image/png" href="assets/tfc-icon.png">
   <style>
     :root {
       color-scheme: light;
@@ -51,16 +51,20 @@
     nav a { font-size: .9rem; color: var(--muted); text-decoration: none; font-weight: 600; }
     nav a:hover, nav a:focus-visible { color: var(--lime); }
     .brand { display: flex; align-items: center; text-decoration: none; }
-    .brand-logo { display: block; width: 190px; max-width: 44vw; height: auto; }
+    .brand-logo { display: block; width: 420px; max-width: min(68vw, 420px); height: auto; }
     .privacy { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; }
     .privacy svg { color: var(--lime); }
     main { max-width: 940px; margin: auto; display: grid; gap: 20px; }
     .workspace { display: flex; flex-direction: column; text-align: center; }
-    .controls { padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; scroll-margin-top: 20px; box-shadow: 0 20px 45px rgba(37,99,235,.08); }
-    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; align-items: start; }
-    .conversion-action { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; border-top: 1px solid var(--line); padding-top: 18px; }
-    .conversion-action .convert-btn { width: auto; min-width: 200px; }
-    .conversion-action .status { margin: 0; }
+    .controls { padding: 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 22px; scroll-margin-top: 20px; box-shadow: 0 20px 45px rgba(37,99,235,.08); }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; row-gap: 20px; align-items: stretch; }
+    .conversion-action { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 18px; border-top: 1px solid var(--line); padding-top: 22px; margin-top: 4px; }
+    .action-status-card { background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%); border: 1px solid var(--line); border-radius: 18px; padding: 18px 18px 16px; min-height: 116px; display: flex; flex-direction: column; justify-content: center; }
+    .action-status-label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #587194; font-size: .78rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .action-status-label::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: linear-gradient(135deg, var(--lime), var(--accent-2)); box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    .conversion-action .status { margin: 0; min-height: 0; font-size: 1rem; color: #27405f; line-height: 1.45; font-weight: 600; }
+    .action-buttons { display: grid; gap: 12px; align-content: start; }
+    .conversion-action .convert-btn { width: 100%; min-height: 64px; font-size: 1.08rem; border-radius: 16px; }
     .eyebrow { margin: 0 0 10px; color: var(--lime); font-size: .78rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.12; letter-spacing: -.045em; }
     h1 span { color: var(--lime); }
@@ -126,35 +130,104 @@
     .file-name { display: block; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .file-meta { color: var(--muted); font-size: .82rem; }
     .reset-btn { color: var(--ink); background: transparent; border: 1px solid var(--line); flex: 0 0 auto; }
-    .controls h2 { margin: 0 0 20px; font-size: 1.12rem; }
-    .field { margin-bottom: 19px; }
+    .controls h2 { margin: 0 0 18px; font-size: 1.28rem; }
+    .settings-pane { background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%); border: 1px solid var(--line); border-radius: 18px; padding: 18px 18px 16px; min-height: 100%; }
+    .settings-pane h3 { margin: 0 0 16px; font-size: 1rem; color: var(--ink); }
+    .field { margin-bottom: 18px; }
     label, .field-title { display: block; margin-bottom: 8px; color: #1f3555; font-size: .9rem; font-weight: 700; }
     select, input[type="number"] { width: 100%; min-width: 0; padding: 0 12px; color: var(--ink); background: #ffffff; border: 1px solid var(--line); border-radius: 10px; }
     .dimensions label { min-width: 0; }
-    .format-select { font-weight: 750; }
-    .dimensions { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: end; gap: 8px; }
+    .format-select { font-weight: 750; box-shadow: inset 0 1px 0 rgba(255,255,255,.65); }
+    .dimensions { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: end; gap: 10px; }
     .times { color: var(--muted); text-align: center; padding-bottom: 12px; }
     .check-row { display: flex; align-items: center; gap: 10px; margin: -4px 0 20px; color: var(--muted); font-size: .9rem; }
     .check-row input { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: #c7d4e3; position: relative; margin: 0; transition: .2s; }
     .check-row input::after { content: ""; position: absolute; width: 16px; height: 16px; top: 3px; left: 3px; border-radius: 50%; background: #fff; transition: .2s; }
     .check-row input:checked { background: var(--lime); }
     .check-row input:checked::after { left: 19px; background: #ffffff; }
-    .quality-head { display: flex; justify-content: space-between; gap: 12px; }
-    .quality-value { color: var(--lime); }
+    .quality-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .quality-value { color: var(--lime); font-weight: 800; padding: 5px 10px; border-radius: 999px; background: #eef4ff; min-width: 62px; text-align: center; }
     input[type="range"] { width: 100%; accent-color: var(--lime); }
-    .format-note { padding: 12px 13px; margin: 2px 0 18px; border-left: 3px solid var(--lime); background: #eef4ff; color: var(--muted); font-size: .875rem; border-radius: 0 10px 10px 0; }
+    .format-note { padding: 14px 15px; margin: 2px 0 0; border-left: 3px solid var(--lime); background: #eef4ff; color: var(--muted); font-size: .91rem; border-radius: 0 12px 12px 0; line-height: 1.45; }
     .convert-btn { width: 100%; min-height: 52px; }
     .result { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: none; }
     .result.visible { display: block; }
     .result-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 11px; font-size: .88rem; }
     .result-size { color: var(--muted); }
     .download-btn { width: 100%; background: #132238; color: #ffffff; min-height: 48px; }
-    .download-all-btn { border: 1px solid var(--line); background: #ffffff; color: var(--ink); min-height: 46px; padding: 0 18px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+    .download-all-btn { border: 1px solid #cddcf0; background: #ffffff; color: var(--ink); min-height: 52px; padding: 0 18px; border-radius: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(19,34,56,.05); }
     .download-all-btn:hover { border-color: var(--lime); }
     .download-all-btn[hidden] { display: none; }
     .status { min-height: 24px; margin: 12px 0 0; font-size: .86rem; color: var(--muted); }
     .status.error { color: var(--danger); }
+    .action-status-card .status.error { color: var(--danger); }
     footer { display: flex; justify-content: space-between; gap: 18px; color: var(--muted); font-size: .8rem; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); }
+
+    .input-formats { margin-top: 14px; text-align: left; border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+    .input-formats summary { cursor: pointer; padding: 13px 16px; font-weight: 800; color: var(--ink); user-select: none; }
+    .input-formats[open] summary { border-bottom: 1px solid var(--line); }
+    .input-format-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 16px 8px; }
+    .input-format-grid span { border: 1px solid #cfe0f3; background: #f7fbff; color: #31527a; border-radius: 999px; padding: 4px 9px; font: 700 .74rem ui-monospace, monospace; }
+    .input-formats p { margin: 6px 16px 14px; color: var(--muted); font-size: .82rem; }
+
+    .transform-tools { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; margin-top: 8px; }
+    .tool-btn { min-height: 42px; border: 1px solid #cddcf0; background: #fff; color: #27405f; border-radius: 11px; font-weight: 750; padding: 0 12px; }
+    .tool-btn:hover:not(:disabled) { border-color: var(--lime); background: #f7fbff; }
+    .tool-btn-muted { grid-column: 1 / -1; color: var(--muted); }
+    .local-tools { max-width: 940px; margin: 6px auto 0; padding: 26px; background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 40px rgba(19,34,56,.06); }
+    .local-tools-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 8px; }
+    .local-tools h2 { margin: 0; font-size: 1.35rem; }
+    .local-badge { flex: 0 0 auto; padding: 6px 10px; border-radius: 999px; background: #ecfdf5; color: #087a58; border: 1px solid #b7eddc; font-size: .76rem; font-weight: 800; }
+    .local-intro { color: var(--muted); margin: 8px 0 18px; max-width: 72ch; }
+    .local-tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .local-tool-card { min-height: 118px; text-align: left; padding: 16px; border: 1px solid #d7e3f1; border-radius: 15px; background: linear-gradient(180deg,#fff 0%,#f9fcff 100%); color: var(--ink); cursor: pointer; transition: .16s ease; }
+    .local-tool-card:hover:not(:disabled) { border-color: #9bbdec; box-shadow: 0 10px 24px rgba(37,99,235,.08); transform: translateY(-1px); }
+    .local-tool-card strong { display: block; margin-bottom: 5px; font-size: .96rem; }
+    .local-tool-card span { display: block; color: var(--muted); font-size: .8rem; line-height: 1.42; font-weight: 500; }
+    .local-tool-card .tool-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #eef4ff; color: var(--lime); margin-bottom: 11px; font-weight: 900; }
+    .local-tool-card:disabled { opacity: .48; cursor: not-allowed; }
+    .crop-panel { margin-top: 14px; border: 1px solid #d8e3f0; background: #f8fbff; border-radius: 15px; padding: 16px; display: none; }
+    .crop-panel.visible { display: block; }
+    .crop-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+    .crop-actions { display: flex; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+    .crop-actions button { min-height: 40px; padding: 0 14px; border-radius: 10px; font-weight: 800; }
+    .crop-apply { border: 0; background: linear-gradient(135deg,var(--lime),var(--accent-2)); color: #fff; }
+    .crop-cancel { border: 1px solid var(--line); background: #fff; color: var(--ink); }
+    .color-picker-panel { margin-top: 14px; display: none; align-items: center; gap: 12px; border: 1px solid #d8e3f0; background: #f8fbff; border-radius: 15px; padding: 14px 16px; }
+    .color-picker-panel.visible { display: flex; }
+    .color-swatch { width: 42px; height: 42px; border-radius: 10px; border: 1px solid rgba(0,0,0,.14); background: #fff; flex: 0 0 auto; }
+    .color-values { min-width: 0; }
+    .color-values strong { display:block; }
+    .color-values span { color:var(--muted); font-size:.82rem; }
+    .picker-active #preview { cursor: crosshair; }
+    .utility-panel { margin-top: 14px; border: 1px solid #d8e3f0; background: #f8fbff; border-radius: 15px; padding: 16px; display: none; }
+    .utility-panel.visible { display: block; }
+    .utility-panel h3 { margin: 0 0 6px; font-size: 1rem; }
+    .utility-panel p { margin: 0 0 14px; color: var(--muted); font-size: .86rem; }
+    .utility-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+    .utility-grid.two { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .utility-grid label { margin: 0; }
+    .utility-grid select, .utility-grid input { width: 100%; min-height: 42px; margin-top: 6px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+    .utility-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:12px; }
+    .utility-actions button { min-height:40px; padding:0 14px; border-radius:10px; font-weight:800; }
+    .utility-primary { border:0; background:linear-gradient(135deg,var(--lime),var(--accent-2)); color:#fff; }
+    .utility-secondary { border:1px solid var(--line); background:#fff; color:var(--ink); }
+    .utility-result { margin-top:12px; padding:12px 13px; border-radius:11px; background:#eef4ff; color:#27405f; font-weight:700; min-height:44px; display:flex; align-items:center; }
+    .archive-file-list { margin: 10px 0 0; color: var(--muted); font-size: .82rem; }
+    .privacy-local-note { margin-top: 16px; padding: 13px 14px; border-left: 3px solid var(--accent-2); border-radius: 0 12px 12px 0; background: #ecfdf5; color: #245b4a; font-size: .86rem; line-height: 1.5; }
+    .external-tools { max-width: 940px; margin: 6px auto 0; padding: 26px; background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 40px rgba(19,34,56,.06); }
+    .external-tools-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 6px; }
+    .external-tools h2 { margin: 0; font-size: 1.35rem; }
+    .external-badge { flex: 0 0 auto; padding: 6px 10px; border-radius: 999px; background: #eef4ff; color: #31527a; border: 1px solid #d6e4f5; font-size: .76rem; font-weight: 800; }
+    .external-intro { color: var(--muted); margin: 8px 0 18px; }
+    .external-tool-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .external-group { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg,#fff 0%,#fbfdff 100%); }
+    .external-group h3 { margin: 0 0 12px; font-size: 1rem; }
+    .external-group h3 span { color: var(--muted); font-weight: 650; font-size: .82rem; margin-left: 6px; }
+    .external-links { display: grid; gap: 8px; }
+    .external-links a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 42px; padding: 0 12px; border: 1px solid #d7e3f1; border-radius: 10px; text-decoration: none; color: #2459c4; background: #fff; font-weight: 750; }
+    .external-links a:hover, .external-links a:focus-visible { border-color: var(--lime); background: #f5f9ff; }
+    .external-warning { margin-top: 18px; padding: 14px 15px; border-left: 3px solid #d97706; background: #fff8eb; border-radius: 0 12px 12px 0; color: #6f531c; font-size: .88rem; line-height: 1.5; }
     @media (max-width: 820px) {
       .shell { width: min(100% - 20px, 680px); padding-top: 18px; }
       .privacy span { display: none; }
@@ -163,17 +236,33 @@
       .privacy { display: none; }
       .dropzone { min-height: 250px; }
     }
+    @media (max-width: 760px) {
+      .settings-grid { grid-template-columns: 1fr; }
+      .conversion-action { grid-template-columns: 1fr; }
+      .local-tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .crop-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .external-tool-groups { grid-template-columns: 1fr; }
+      .action-buttons { grid-template-columns: 1fr; }
+    }
     @media (max-width: 460px) {
-      .controls { padding: 16px; }
-      .settings-grid, .conversion-action { grid-template-columns: 1fr; gap: 8px; }
-      .conversion-action .convert-btn { width: 100%; }
-      .conversion-action .status { order: 2; margin-top: 8px; }
+      .controls { padding: 16px; border-radius: 18px; }
+      .settings-pane { padding: 16px; }
+      .settings-grid, .conversion-action { grid-template-columns: 1fr; gap: 10px; }
+      .conversion-action .convert-btn { width: 100%; min-height: 56px; font-size: 1rem; }
+      .conversion-action .status { order: 2; margin-top: 0; font-size: .95rem; }
       .queue-item { grid-template-columns: minmax(0, 1fr); gap: 8px; }
       .queue-buttons { justify-content: flex-end; }
       nav { gap: 12px; }
       nav a { font-size: .875rem; }
       header { margin-bottom: 20px; }
       .filebar { align-items: flex-start; }
+      .transform-tools { grid-template-columns: 1fr; }
+      .tool-btn-muted { grid-column: auto; }
+      .local-tools, .external-tools { padding: 18px; }
+      .local-tools-head { flex-direction: column; }
+      .local-tool-grid { grid-template-columns: 1fr; }
+      .utility-grid, .utility-grid.two { grid-template-columns: 1fr; }
+      .external-tools-head { flex-direction: column; }
       footer { flex-direction: column; gap: 4px; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
@@ -182,7 +271,7 @@
 <body>
   <div class="shell">
     <header>
-      <a class="brand" href="#page-title" aria-label="Total Free Convert home"><img class="brand-logo" src="assets/tfc-logo.svg" alt="Total Free Convert"></a>
+      <a class="brand" href="#page-title" aria-label="Total Free Convert home"><img class="brand-logo" src="assets/tfc-logo.png" alt="Total Free Convert"></a>
       <nav aria-label="Main navigation"><a href="#page-title">Convert</a><a href="#formats">Formats</a><a href="#settings">Settings</a></nav>
       <div class="privacy"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.8 8.8 7 10 4.2-1.2 7-5.2 7-10V6l-7-3Z" stroke="currentColor" stroke-width="2"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2"/></svg><span>Files stay on your device</span></div>
     </header>
@@ -193,7 +282,7 @@
         <h1 id="page-title">Your image. <span>A new format.</span></h1>
         <p class="intro">Convert and resize images right in your browser.<br>No uploads. No account. Just your files.</p>
         <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose an image or drop one here">
-          <input id="fileInput" type="file" accept="image/*,.tga,.targa" multiple hidden>
+          <input id="fileInput" type="file" accept="image/*,.djv,.eps,.ppm,.art,.dpx,.wmz,.dds,.heic,.heif,.avif,.pcx,.tif,.tiff,.jpeg,.jpg,.jfif,.emz,.tga,.targa,.dib,.djvu,.cbz,.jxl,.ico,.cbr,.psb,.arw,.x3f,.raw,.nrw,.nef,.rwl,.k25,.crw,.dcs,.drf,.cr3,.orf,.dcr,.cr2,.rw2,.srw,.pef,.raf,.dng,.kdc,.srf,.ptx,.sr2,.psd,.svg,.webp,.gif,.png,.bmp,.odd" multiple hidden>
           <div id="emptyState" class="drop-empty">
             <div class="upload-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <button id="browseBtn" class="browse-btn" type="button">Choose images</button>
@@ -207,7 +296,13 @@
             </div>
           </div>
         </div>
-        <div class="format-strip" id="formats" aria-label="Supported output formats"><span>PNG</span><span>JPG</span><span>WEBP</span><span>BMP</span><span>TGA</span></div>
+        <div class="format-strip" id="formats" aria-label="Confirmed local output formats"><span>PNG</span><span>JPG</span><span>WEBP</span><span>BMP</span><span>TGA</span></div>
+        <details class="input-formats"><summary>Input format support</summary>
+          <p><strong>Confirmed local:</strong> PNG, JPG/JPEG, WebP, GIF, BMP, SVG and other formats your browser can decode, plus TGA and PPM through TFC's own decoders.</p>
+          <div class="input-format-grid"><span>PNG</span><span>JPG</span><span>JPEG</span><span>WebP</span><span>GIF</span><span>BMP</span><span>SVG</span><span>TGA</span><span>PPM</span></div>
+          <p><strong>Browser-dependent:</strong> TFC will accept and try these files, but support depends on the browser/OS decoder and is not advertised as guaranteed conversion.</p>
+          <div class="input-format-grid"><span>DJV</span><span>EPS</span><span>ART</span><span>DPX</span><span>WMZ</span><span>DDS</span><span>HEIC</span><span>AVIF</span><span>PCX</span><span>TIF</span><span>TIFF</span><span>EMZ</span><span>DIB</span><span>DJVU</span><span>CBZ</span><span>HEIF</span><span>JXL</span><span>ICO</span><span>CBR</span><span>JFIF</span><span>PSB</span><span>ARW</span><span>X3F</span><span>RAW</span><span>NRW</span><span>NEF</span><span>RWL</span><span>K25</span><span>CRW</span><span>DCS</span><span>DRF</span><span>CR3</span><span>ORF</span><span>DCR</span><span>CR2</span><span>RW2</span><span>SRW</span><span>PEF</span><span>RAF</span><span>DNG</span><span>KDC</span><span>SRF</span><span>PTX</span><span>SR2</span><span>PSD</span><span>ODD</span></div>
+        </details>
         <section id="queuePanel" class="queue-panel" hidden aria-labelledby="queueSummary">
           <div class="queue-head"><strong id="queueSummary">0 files</strong><div class="queue-actions"><button id="addMoreBtn" class="queue-action" type="button">Add files</button><button id="clearQueueBtn" class="queue-action" type="button">Clear all</button></div></div>
           <ol id="queueList" class="queue-list"></ol>
@@ -217,7 +312,8 @@
       <aside id="settings" class="controls" aria-labelledby="settings-title">
         <h2 id="settings-title">Output settings</h2>
         <div class="settings-grid">
-        <div>
+        <section class="settings-pane" aria-labelledby="format-section-title">
+        <h3 id="format-section-title">Format &amp; quality</h3>
         <div class="field">
           <label for="format">File format</label>
           <select id="format" class="format-select">
@@ -233,8 +329,9 @@
           <input id="quality" type="range" min="10" max="100" value="90">
         </div>
         <div id="formatNote" class="format-note">PNG keeps transparency and sharp edges without quality loss.</div>
-        </div>
-        <div>
+        </section>
+        <section class="settings-pane" aria-labelledby="dimensions-section-title">
+        <h3 id="dimensions-section-title">Resize</h3>
         <div class="field">
           <span class="field-title">Dimensions · current file</span>
           <div class="dimensions">
@@ -244,22 +341,133 @@
           </div>
         </div>
         <label class="check-row"><input id="lockRatio" type="checkbox" checked><span>Keep aspect ratio</span></label>
+        <div class="transform-tools" aria-label="Image transforms">
+          <button id="rotateLeftBtn" type="button" class="tool-btn" disabled>↺ Rotate left</button>
+          <button id="rotateRightBtn" type="button" class="tool-btn" disabled>↻ Rotate right</button>
+          <button id="flipHBtn" type="button" class="tool-btn" disabled>⇋ Flip horizontal</button>
+          <button id="flipVBtn" type="button" class="tool-btn" disabled>⇅ Flip vertical</button>
+          <button id="resetTransformBtn" type="button" class="tool-btn tool-btn-muted" disabled>Reset</button>
         </div>
+        </section>
         </div>
         <div class="conversion-action">
-        <p id="status" class="status" role="status" aria-live="polite">Choose an image to begin.</p>
-        <button id="convertBtn" class="convert-btn" type="button" disabled>Convert queue →</button>
-        <button id="downloadAllBtn" class="download-all-btn" type="button" hidden>Download all (.zip)</button>
+          <div class="action-status-card">
+            <div class="action-status-label">Queue status</div>
+            <p id="status" class="status" role="status" aria-live="polite">Choose an image to begin.</p>
+          </div>
+          <div class="action-buttons">
+            <button id="convertBtn" class="convert-btn" type="button" disabled>Convert queue →</button>
+            <button id="downloadAllBtn" class="download-all-btn" type="button" hidden>Download all (.zip)</button>
+          </div>
         </div>
       </aside>
     </main>
-    <footer><span>No file-count limit · processed one at a time.</span><span>Version 1.0.1 · Maximum practical size depends on your browser.</span></footer>
+
+    <section id="local-tools" class="local-tools" aria-labelledby="local-tools-title">
+      <div class="local-tools-head">
+        <div><p class="eyebrow">Built into TFC</p><h2 id="local-tools-title">Local image tools</h2></div>
+        <span class="local-badge">Runs locally · no upload</span>
+      </div>
+      <p class="local-intro">These tools use the same private in-browser image engine as the converter. Pick an image above first; nothing is sent to a TFC server.</p>
+      <div class="local-tool-grid">
+        <button id="imageCompressTool" class="local-tool-card" type="button"><span class="tool-icon">↓</span><strong>Image Compressor</strong><span>Use WebP at a balanced quality for smaller general-purpose image files.</span></button>
+        <button id="jpegCompressTool" class="local-tool-card" type="button"><span class="tool-icon">J</span><strong>JPEG Compressor</strong><span>Switch to JPG with a smaller quality preset. Great for photos.</span></button>
+        <button id="pngCompressTool" class="local-tool-card" type="button"><span class="tool-icon">P</span><strong>PNG Optimizer</strong><span>Re-encode a PNG locally. File size can vary because PNG remains lossless.</span></button>
+        <button id="resizeTool" class="local-tool-card" type="button"><span class="tool-icon">↔</span><strong>Resize Image</strong><span>Jump to the width and height controls for the selected image.</span></button>
+        <button id="cropTool" class="local-tool-card" type="button"><span class="tool-icon">⌗</span><strong>Crop Image</strong><span>Crop to an exact pixel rectangle before converting.</span></button>
+        <button id="colorPickerTool" class="local-tool-card" type="button"><span class="tool-icon">●</span><strong>Color Picker</strong><span>Click the preview to read a pixel as HEX and RGB.</span></button>
+        <button id="rotateTool" class="local-tool-card" type="button"><span class="tool-icon">↻</span><strong>Rotate Image</strong><span>Rotate the current image 90° clockwise.</span></button>
+        <button id="flipTool" class="local-tool-card" type="button"><span class="tool-icon">⇋</span><strong>Flip Image</strong><span>Flip the current image horizontally.</span></button>
+        <button id="enlargeTool" class="local-tool-card" type="button"><span class="tool-icon">2×</span><strong>Image Enlarger</strong><span>Set the current image to 200% dimensions while keeping aspect ratio.</span></button>
+        <button id="imagePdfTool" class="local-tool-card" type="button"><span class="tool-icon">PDF</span><strong>Image to PDF</strong><span>Export the selected image as a one-page PDF entirely in your browser.</span></button>
+        <button id="zipTool" class="local-tool-card" type="button"><span class="tool-icon">ZIP</span><strong>ZIP Creator</strong><span>Package arbitrary local files into one ZIP without uploading them.</span></button>
+        <button id="unitTool" class="local-tool-card" type="button"><span class="tool-icon">↕</span><strong>Unit Converter</strong><span>Convert length, weight, temperature and data sizes locally.</span></button>
+        <button id="timeTool" class="local-tool-card" type="button"><span class="tool-icon">◷</span><strong>Time Converter</strong><span>Convert a clock time between UTC offsets locally.</span></button>
+      </div>
+      <div id="cropPanel" class="crop-panel" aria-live="polite">
+        <strong>Crop rectangle</strong>
+        <div class="crop-grid">
+          <label>X<input id="cropX" type="number" min="0" value="0"></label>
+          <label>Y<input id="cropY" type="number" min="0" value="0"></label>
+          <label>Width<input id="cropW" type="number" min="1"></label>
+          <label>Height<input id="cropH" type="number" min="1"></label>
+        </div>
+        <div class="crop-actions"><button id="applyCropBtn" class="crop-apply" type="button">Apply crop</button><button id="clearCropBtn" class="crop-cancel" type="button">Clear crop</button><button id="closeCropBtn" class="crop-cancel" type="button">Close</button></div>
+      </div>
+      <div id="colorPickerPanel" class="color-picker-panel">
+        <div id="colorSwatch" class="color-swatch"></div>
+        <div class="color-values"><strong id="colorHex">Click the image preview</strong><span id="colorRgb">Color values will appear here.</span></div>
+      </div>
+      <div id="pdfPanel" class="utility-panel">
+        <h3>Image to PDF</h3><p>The currently selected image is placed on a single PDF page. Processing stays on your device.</p>
+        <div class="utility-actions"><button id="createPdfBtn" class="utility-primary" type="button">Create PDF</button><button id="closePdfBtn" class="utility-secondary" type="button">Close</button></div>
+      </div>
+      <div id="zipPanel" class="utility-panel">
+        <h3>ZIP Creator</h3><p>Select any files and package them into one ZIP. TFC does not upload them.</p>
+        <input id="zipInput" type="file" multiple>
+        <div id="zipFileList" class="archive-file-list">No files selected.</div>
+        <div class="utility-actions"><button id="createZipBtn" class="utility-primary" type="button">Create ZIP</button><button id="closeZipBtn" class="utility-secondary" type="button">Close</button></div>
+      </div>
+      <div id="unitPanel" class="utility-panel">
+        <h3>Unit Converter</h3><p>Convert common units instantly in your browser.</p>
+        <div class="utility-grid">
+          <label>Category<select id="unitCategory"><option value="length">Length</option><option value="weight">Weight</option><option value="temperature">Temperature</option><option value="data">Data size</option></select></label>
+          <label>From<select id="unitFrom"></select></label>
+          <label>To<select id="unitTo"></select></label>
+          <label>Value<input id="unitValue" type="number" step="any" value="1"></label>
+        </div>
+        <div id="unitResult" class="utility-result">Enter a value.</div>
+        <div class="utility-actions"><button id="closeUnitBtn" class="utility-secondary" type="button">Close</button></div>
+      </div>
+      <div id="timePanel" class="utility-panel">
+        <h3>Time Converter</h3><p>Convert a time between UTC offsets. No location or network lookup is used.</p>
+        <div class="utility-grid two">
+          <label>Time<input id="timeValue" type="time" value="12:00"></label>
+          <label>From UTC offset<select id="timeFrom"></select></label>
+          <label>To UTC offset<select id="timeTo"></select></label>
+        </div>
+        <div id="timeResult" class="utility-result">12:00</div>
+        <div class="utility-actions"><button id="closeTimeBtn" class="utility-secondary" type="button">Close</button></div>
+      </div>
+      <div class="privacy-local-note"><strong>Privacy:</strong> Local TFC tools process images in your browser/device only. TFC does not upload the selected files. External tools listed below are separate services and have their own privacy terms.</div>
+    </section>
+
+    <section id="external-tools" class="external-tools" aria-labelledby="external-tools-title">
+      <div class="external-tools-head">
+        <div><p class="eyebrow">Optional extras</p><h2 id="external-tools-title">External tools</h2></div>
+        <span class="external-badge">Opens another website</span>
+      </div>
+      <p class="external-intro">These tools are provided by ClipSnap and ProPDF. They are not part of Total Free Convert.</p>
+      <div class="external-tool-groups">
+        <div class="external-group">
+          <h3>AI image tools <span>ClipSnap</span></h3>
+          <div class="external-links">
+            <a href="https://www.clipsnap.com/background-remover/" target="_blank" rel="noopener noreferrer">Background Remover ↗</a>
+            <a href="https://www.clipsnap.com/ai-image-generator/" target="_blank" rel="noopener noreferrer">AI Image Generator ↗</a>
+            <a href="https://www.clipsnap.com/magic-eraser/" target="_blank" rel="noopener noreferrer">Magic Eraser ↗</a>
+            <a href="https://www.clipsnap.com/generative-fill/" target="_blank" rel="noopener noreferrer">Generative Fill ↗</a>
+          </div>
+        </div>
+        <div class="external-group">
+          <h3>PDF tools <span>ProPDF</span></h3>
+          <div class="external-links">
+            <a href="https://www.propdf.com/pdf-editor" target="_blank" rel="noopener noreferrer">PDF Editor ↗</a>
+            <a href="https://www.propdf.com/sign-pdf" target="_blank" rel="noopener noreferrer">Sign PDF ↗</a>
+            <a href="https://www.propdf.com/merge-pdf" target="_blank" rel="noopener noreferrer">Merge PDF ↗</a>
+            <a href="https://www.propdf.com/split-pdf" target="_blank" rel="noopener noreferrer">Split PDF ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="external-warning"><strong>Privacy notice:</strong> When you open one of these links, you leave Total Free Convert. The external service's own privacy policy, terms and file-processing practices apply. TFC does not control how those services handle your data.</div>
+    </section>
+
+    <footer><span>No file-count limit · processed one at a time.</span><span>Version 1.3.0 · Maximum practical size depends on your browser.</span></footer>
   </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
-    const els = Object.fromEntries(['dropzone','fileInput','browseBtn','emptyState','previewWrap','preview','fileName','fileMeta','resetBtn','queuePanel','queueSummary','queueList','addMoreBtn','clearQueueBtn','format','width','height','lockRatio','qualityField','quality','qualityValue','formatNote','convertBtn','downloadAllBtn','status'].map(id => [id, $(id)]));
-    const state = { items: [], activeIndex: -1, source: null, sourceWidth: 0, sourceHeight: 0, processing: false };
+    const els = Object.fromEntries(['dropzone','fileInput','browseBtn','emptyState','previewWrap','preview','fileName','fileMeta','resetBtn','queuePanel','queueSummary','queueList','addMoreBtn','clearQueueBtn','format','width','height','lockRatio','qualityField','quality','qualityValue','formatNote','convertBtn','downloadAllBtn','status','rotateLeftBtn','rotateRightBtn','flipHBtn','flipVBtn','resetTransformBtn','imageCompressTool','jpegCompressTool','pngCompressTool','resizeTool','cropTool','colorPickerTool','rotateTool','flipTool','enlargeTool','cropPanel','cropX','cropY','cropW','cropH','applyCropBtn','clearCropBtn','closeCropBtn','colorPickerPanel','colorSwatch','colorHex','colorRgb','imagePdfTool','zipTool','unitTool','timeTool','pdfPanel','createPdfBtn','closePdfBtn','zipPanel','zipInput','zipFileList','createZipBtn','closeZipBtn','unitPanel','unitCategory','unitFrom','unitTo','unitValue','unitResult','closeUnitBtn','timePanel','timeValue','timeFrom','timeTo','timeResult','closeTimeBtn'].map(id => [id, $(id)]));
+    const state = { items: [], activeIndex: -1, source: null, sourceWidth: 0, sourceHeight: 0, processing: false, colorPicker: false };
     let loadSequence = 0;
     function validateDimensions(width, height) {
       if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > 16384 || height > 16384 || width * height > 32000000) {
@@ -271,10 +479,16 @@
       jpeg: 'JPG creates smaller files. Transparent areas are filled with white.',
       webp: 'WebP balances image quality and a small file size.',
       bmp: 'BMP stores uncompressed pixels for broad legacy compatibility.',
-      tga: 'TGA exports 32-bit color with transparency for game and 3D workflows.'
+      tga: 'TGA exports 32-bit color with transparency for game and 3D workflows.',
     };
     const prettySize = bytes => bytes < 1024 ? bytes + ' B' : bytes < 1048576 ? (bytes / 1024).toFixed(1) + ' KB' : (bytes / 1048576).toFixed(2) + ' MB';
     const safeBase = name => (name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'converted-image');
+    function activeItem() { return state.items[state.activeIndex] || null; }
+    function requireActiveImage(message = 'Choose an image first.') {
+      const item = activeItem();
+      if (!item || !state.source) { setStatus(message, true); return null; }
+      return item;
+    }
 
     function setStatus(message, error = false) {
       els.status.textContent = message;
@@ -342,7 +556,29 @@
       }
       ctx.putImageData(image, 0, 0); return canvas;
     }
+    async function decodePpm(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let pos = 0;
+      const skip = () => { while (pos < bytes.length) { if (bytes[pos] === 35) { while (pos < bytes.length && bytes[pos] !== 10 && bytes[pos] !== 13) pos++; } else if (bytes[pos] <= 32) pos++; else break; } };
+      const token = () => { skip(); const start = pos; while (pos < bytes.length && bytes[pos] > 32 && bytes[pos] !== 35) pos++; return new TextDecoder().decode(bytes.slice(start, pos)); };
+      const magic = token();
+      if (!['P3','P6'].includes(magic)) throw new Error('Only P3 and P6 PPM images are supported.');
+      const width = Number(token()), height = Number(token()), max = Number(token());
+      validateDimensions(width, height);
+      if (!Number.isFinite(max) || max < 1 || max > 65535) throw new Error('This PPM has an unsupported color range.');
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d'), image = ctx.createImageData(width, height), out = image.data;
+      if (magic === 'P3') {
+        for (let i = 0; i < width * height; i++) { const r = Number(token()), g = Number(token()), b = Number(token()); if (![r,g,b].every(Number.isFinite)) throw new Error('This PPM ended unexpectedly.'); const o=i*4; out[o]=Math.round(r*255/max); out[o+1]=Math.round(g*255/max); out[o+2]=Math.round(b*255/max); out[o+3]=255; }
+      } else {
+        skip(); const bytesPer = max > 255 ? 2 : 1;
+        for (let i = 0; i < width * height; i++) { const read = () => { if (pos + bytesPer > bytes.length) throw new Error('This PPM ended unexpectedly.'); if (bytesPer===1) return bytes[pos++]; const v=(bytes[pos]<<8)|bytes[pos+1]; pos+=2; return v; }; const o=i*4; out[o]=Math.round(read()*255/max); out[o+1]=Math.round(read()*255/max); out[o+2]=Math.round(read()*255/max); out[o+3]=255; }
+      }
+      ctx.putImageData(image,0,0); return canvas;
+    }
+    const recognizedInputExtensions = new Set(['djv','eps','ppm','art','dpx','wmz','dds','heic','heif','avif','pcx','tif','tiff','jpeg','jpg','jfif','emz','tga','targa','dib','djvu','cbz','jxl','ico','cbr','psb','arw','x3f','raw','nrw','nef','rwl','k25','crw','dcs','drf','cr3','orf','dcr','cr2','rw2','srw','pef','raf','dng','kdc','srf','ptx','sr2','psd','svg','webp','gif','png','bmp','odd']);
     async function decodeFile(file) {
+      if (/\.ppm$/i.test(file.name) || /portable-pixmap/i.test(file.type)) return decodePpm(file);
       if (/\.(tga|targa)$/i.test(file.name) || /tga/i.test(file.type)) return decodeTga(file);
       try {
         const bitmap = await createImageBitmap(file);
@@ -351,6 +587,10 @@
         const url = URL.createObjectURL(file);
         try {
           const image = new Image(); image.decoding = 'async'; image.src = url; await image.decode(); return canvasFromImage(image, image.naturalWidth, image.naturalHeight);
+        } catch {
+          const ext = (file.name.split('.').pop() || '').toLowerCase();
+          if (recognizedInputExtensions.has(ext)) throw new Error(`${ext.toUpperCase()} is recognized by Total Free Convert, but this browser cannot decode it locally yet.`);
+          throw new Error('This image format is not supported by your browser.');
         } finally { URL.revokeObjectURL(url); }
       }
     }
@@ -398,8 +638,10 @@
         state.source = canvas; state.sourceWidth = canvas.width; state.sourceHeight = canvas.height;
         item.width ||= canvas.width; item.height ||= canvas.height; item.targetWidth ||= item.width; item.targetHeight ||= item.height;
         els.width.value = item.targetWidth; els.height.value = item.targetHeight; els.width.disabled = false; els.height.disabled = false;
+        const crop = item.crop || { x: 0, y: 0, w: canvas.width, h: canvas.height };
+        els.cropX.value = crop.x; els.cropY.value = crop.y; els.cropW.value = crop.w; els.cropH.value = crop.h;
         els.fileName.textContent = item.file.name; els.fileMeta.textContent = `${canvas.width} × ${canvas.height} · ${prettySize(item.file.size)}`;
-        updatePreview(canvas); els.emptyState.hidden = true; els.previewWrap.classList.add('visible'); renderQueue();
+        updatePreview(canvas); els.emptyState.hidden = true; els.previewWrap.classList.add('visible'); updateTransformButtons(); refreshTransformedPreview(); renderQueue();
         if (!processing) setStatus(`${state.items.length} file${state.items.length === 1 ? '' : 's'} ready. Select Convert to process them sequentially.`);
         return true;
       } catch (error) {
@@ -409,15 +651,105 @@
         return false;
       }
     }
-    function outputCanvas(item) {
+    function outputCanvas(item, forPreview = false) {
       const width = Math.max(1, Math.min(16384, Number(item.targetWidth) || state.sourceWidth));
       const height = Math.max(1, Math.min(16384, Number(item.targetHeight) || state.sourceHeight));
       validateDimensions(width, height);
       item.targetWidth = width; item.targetHeight = height; els.width.value = width; els.height.value = height;
-      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      const crop = item.crop || { x: 0, y: 0, w: state.sourceWidth, h: state.sourceHeight };
+      const sx = Math.max(0, Math.min(state.sourceWidth - 1, Number(crop.x) || 0));
+      const sy = Math.max(0, Math.min(state.sourceHeight - 1, Number(crop.y) || 0));
+      const sw = Math.max(1, Math.min(state.sourceWidth - sx, Number(crop.w) || state.sourceWidth));
+      const sh = Math.max(1, Math.min(state.sourceHeight - sy, Number(crop.h) || state.sourceHeight));
+      const rotation = ((item.rotation || 0) % 360 + 360) % 360;
+      const swap = rotation === 90 || rotation === 270;
+      const canvas = document.createElement('canvas'); canvas.width = swap ? height : width; canvas.height = swap ? width : height;
       const ctx = canvas.getContext('2d');
-      if (els.format.value === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); }
-      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(state.source, 0, 0, width, height); return canvas;
+      if (!forPreview && els.format.value === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(rotation * Math.PI / 180);
+      ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1);
+      ctx.drawImage(state.source, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
+      return canvas;
+    }
+    function refreshTransformedPreview() {
+      const item = state.items[state.activeIndex];
+      if (!item || !state.source) return;
+      try { updatePreview(outputCanvas(item, true)); } catch {}
+    }
+    function updateTransformButtons() {
+      const enabled = !!state.items[state.activeIndex] && !!state.source && !state.processing;
+      [els.rotateLeftBtn, els.rotateRightBtn, els.flipHBtn, els.flipVBtn, els.resetTransformBtn, els.resizeTool, els.cropTool, els.colorPickerTool, els.rotateTool, els.flipTool, els.enlargeTool].forEach(btn => btn.disabled = !enabled);
+    }
+    function changeTransform(kind) {
+      const item = state.items[state.activeIndex];
+      if (!item || state.processing) return;
+      if (kind === 'left') item.rotation = ((item.rotation || 0) + 270) % 360;
+      if (kind === 'right') item.rotation = ((item.rotation || 0) + 90) % 360;
+      if (kind === 'flipH') item.flipX = !item.flipX;
+      if (kind === 'flipV') item.flipY = !item.flipY;
+      if (kind === 'reset') { item.rotation = 0; item.flipX = false; item.flipY = false; }
+      revokeOutput(item); refreshTransformedPreview(); renderQueue();
+    }
+    function setCompressionPreset(format, quality, label) {
+      els.format.value = format;
+      if (quality !== null) { els.quality.value = String(quality); els.qualityValue.textContent = `${quality}%`; }
+      syncFormatUI();
+      document.getElementById('settings').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setStatus(`${label} preset selected. Convert the queue when ready.`);
+    }
+    function openCropPanel() {
+      const item = requireActiveImage(); if (!item) return;
+      const crop = item.crop || { x: 0, y: 0, w: state.sourceWidth, h: state.sourceHeight };
+      els.cropX.value = crop.x; els.cropY.value = crop.y; els.cropW.value = crop.w; els.cropH.value = crop.h;
+      els.cropPanel.classList.add('visible');
+      els.cropPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function applyCrop() {
+      const item = requireActiveImage(); if (!item) return;
+      const x = Math.floor(Number(els.cropX.value)), y = Math.floor(Number(els.cropY.value));
+      const w = Math.floor(Number(els.cropW.value)), h = Math.floor(Number(els.cropH.value));
+      if (![x,y,w,h].every(Number.isFinite) || x < 0 || y < 0 || w < 1 || h < 1 || x + w > state.sourceWidth || y + h > state.sourceHeight) {
+        setStatus(`Crop must fit inside ${state.sourceWidth} × ${state.sourceHeight}.`, true); return;
+      }
+      item.crop = { x, y, w, h }; item.targetWidth = w; item.targetHeight = h;
+      els.width.value = w; els.height.value = h; revokeOutput(item); refreshTransformedPreview(); renderQueue();
+      setStatus(`Crop applied: ${w} × ${h} from (${x}, ${y}).`);
+    }
+    function clearCrop() {
+      const item = requireActiveImage(); if (!item) return;
+      item.crop = null; item.targetWidth = item.width || state.sourceWidth; item.targetHeight = item.height || state.sourceHeight;
+      els.width.value = item.targetWidth; els.height.value = item.targetHeight;
+      els.cropX.value = 0; els.cropY.value = 0; els.cropW.value = state.sourceWidth; els.cropH.value = state.sourceHeight;
+      revokeOutput(item); refreshTransformedPreview(); renderQueue(); setStatus('Crop cleared.');
+    }
+    function toggleColorPicker() {
+      if (!requireActiveImage()) return;
+      state.colorPicker = !state.colorPicker;
+      els.colorPickerPanel.classList.toggle('visible', state.colorPicker);
+      document.body.classList.toggle('picker-active', state.colorPicker);
+      if (state.colorPicker) { els.colorHex.textContent = 'Click the image preview'; els.colorRgb.textContent = 'Color values will appear here.'; }
+    }
+    function pickPreviewColor(event) {
+      if (!state.colorPicker || !state.source) return;
+      const rect = els.preview.getBoundingClientRect();
+      const x = Math.max(0, Math.min(els.preview.width - 1, Math.floor((event.clientX - rect.left) * els.preview.width / rect.width)));
+      const y = Math.max(0, Math.min(els.preview.height - 1, Math.floor((event.clientY - rect.top) * els.preview.height / rect.height)));
+      const data = els.preview.getContext('2d').getImageData(x, y, 1, 1).data;
+      const hex = `#${[data[0],data[1],data[2]].map(v => v.toString(16).padStart(2,'0')).join('').toUpperCase()}`;
+      els.colorSwatch.style.background = `rgba(${data[0]},${data[1]},${data[2]},${(data[3]/255).toFixed(3)})`;
+      els.colorHex.textContent = hex;
+      els.colorRgb.textContent = `RGB ${data[0]}, ${data[1]}, ${data[2]} · Alpha ${Math.round(data[3] / 255 * 100)}%`;
+    }
+    function enlargeCurrent() {
+      const item = requireActiveImage(); if (!item) return;
+      const currentW = Math.max(1, Number(item.targetWidth) || state.sourceWidth), currentH = Math.max(1, Number(item.targetHeight) || state.sourceHeight);
+      const maxFactor = Math.min(2, 16384 / currentW, 16384 / currentH, Math.sqrt(32000000 / (currentW * currentH)));
+      if (maxFactor <= 1.001) { setStatus('This image is already at the practical local size limit.', true); return; }
+      const w = Math.max(1, Math.floor(currentW * maxFactor)), h = Math.max(1, Math.floor(currentH * maxFactor));
+      item.targetWidth = w; item.targetHeight = h; els.width.value = w; els.height.value = h; revokeOutput(item); refreshTransformedPreview(); renderQueue();
+      setStatus(`Image enlarged to ${w} × ${h}${maxFactor < 1.99 ? ' (limited by browser safety limits)' : ''}.`);
     }
     function encodeTga(canvas) {
       const { width, height } = canvas, rgba = canvas.getContext('2d').getImageData(0, 0, width, height).data;
@@ -456,7 +788,7 @@
       setStatus(`${converted} file${converted === 1 ? '' : 's'} converted${failed ? `, ${failed} failed` : ''}.${downloadHint}`, failed > 0);
     }
     function addFiles(files) {
-      const additions = Array.from(files || []).map(file => ({ file, status: 'waiting', error: null, width: 0, height: 0, targetWidth: 0, targetHeight: 0, outputBlob: null, outputUrl: null, outputName: null }));
+      const additions = Array.from(files || []).map(file => ({ file, status: 'waiting', error: null, width: 0, height: 0, targetWidth: 0, targetHeight: 0, outputBlob: null, outputUrl: null, outputName: null, rotation: 0, flipX: false, flipY: false, crop: null }));
       if (!additions.length) return;
       const firstNew = state.items.length; state.items.push(...additions); els.fileInput.value = ''; renderQueue(); activateItem(firstNew);
     }
@@ -530,14 +862,128 @@
         setStatus(error.message || 'The ZIP file could not be created.', true);
       } finally { renderQueue(); }
     }
+    function closeUtilityPanels() {
+      [els.pdfPanel, els.zipPanel, els.unitPanel, els.timePanel].forEach(panel => panel?.classList.remove('visible'));
+    }
+    function openUtilityPanel(panel) {
+      closeUtilityPanels();
+      panel.classList.add('visible');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function downloadBlob(blob, name) {
+      const url = URL.createObjectURL(blob), link = document.createElement('a');
+      link.href = url; link.download = name; document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+    function bytesFromDataUrl(dataUrl) {
+      const binary = atob(dataUrl.split(',')[1]), out = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+      return out;
+    }
+    function createSingleImagePdf(canvas) {
+      const imageBytes = bytesFromDataUrl(canvas.toDataURL('image/jpeg', 0.92));
+      const enc = new TextEncoder();
+      const pageW = 595.28, pageH = 841.89, margin = 36;
+      const scale = Math.min((pageW - margin * 2) / canvas.width, (pageH - margin * 2) / canvas.height);
+      const drawW = Math.max(1, canvas.width * scale), drawH = Math.max(1, canvas.height * scale);
+      const x = (pageW - drawW) / 2, y = (pageH - drawH) / 2;
+      const contentText = `q\n${drawW.toFixed(2)} 0 0 ${drawH.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+      const contentBytes = enc.encode(contentText);
+      const chunks = [];
+      const offsets = [0];
+      let pos = 0;
+      const push = part => { const b = typeof part === 'string' ? enc.encode(part) : part; chunks.push(b); pos += b.length; };
+      push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+      offsets[1] = pos; push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+      offsets[2] = pos; push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+      offsets[3] = pos; push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
+      offsets[4] = pos; push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imageBytes.length} >>\nstream\n`); push(imageBytes); push('\nendstream\nendobj\n');
+      offsets[5] = pos; push(`5 0 obj\n<< /Length ${contentBytes.length} >>\nstream\n`); push(contentBytes); push('endstream\nendobj\n');
+      const xref = pos;
+      push('xref\n0 6\n0000000000 65535 f \n');
+      for (let i = 1; i <= 5; i++) push(String(offsets[i]).padStart(10, '0') + ' 00000 n \n');
+      push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+      return new Blob(chunks, { type: 'application/pdf' });
+    }
+    async function createPdfFromActive() {
+      const item = requireActiveImage('Choose an image before creating a PDF.'); if (!item) return;
+      try {
+        const canvas = outputCanvas(item);
+        const pdf = createSingleImagePdf(canvas);
+        downloadBlob(pdf, `${safeBase(item.file.name)}.pdf`);
+        setStatus('PDF created locally and downloaded.');
+      } catch (error) { setStatus(error.message || 'The PDF could not be created.', true); }
+    }
+    async function createArchiveZip() {
+      const files = Array.from(els.zipInput.files || []);
+      if (!files.length) { els.zipFileList.textContent = 'Choose one or more files first.'; return; }
+      els.createZipBtn.disabled = true;
+      els.zipFileList.textContent = `Creating ZIP with ${files.length} file${files.length === 1 ? '' : 's'}…`;
+      try {
+        const zip = await createZipBlob(files.map(file => ({ outputBlob: file, outputName: file.name })));
+        downloadBlob(zip, `tfc-archive-${files.length}-files.zip`);
+        els.zipFileList.textContent = `${files.length} file${files.length === 1 ? '' : 's'} packaged locally into a ZIP.`;
+      } catch (error) { els.zipFileList.textContent = error.message || 'ZIP creation failed.'; }
+      finally { els.createZipBtn.disabled = false; }
+    }
+    const unitSets = {
+      length: {
+        units: { m: ['Meters', 1], km: ['Kilometers', 1000], cm: ['Centimeters', .01], mm: ['Millimeters', .001], in: ['Inches', .0254], ft: ['Feet', .3048], yd: ['Yards', .9144], mi: ['Miles', 1609.344] },
+        convert(v, from, to) { return v * this.units[from][1] / this.units[to][1]; }
+      },
+      weight: {
+        units: { kg: ['Kilograms', 1], g: ['Grams', .001], lb: ['Pounds', .45359237], oz: ['Ounces', .028349523125], st: ['Stone', 6.35029318] },
+        convert(v, from, to) { return v * this.units[from][1] / this.units[to][1]; }
+      },
+      data: {
+        units: { B: ['Bytes', 1], KB: ['KB', 1024], MB: ['MB', 1048576], GB: ['GB', 1073741824], TB: ['TB', 1099511627776] },
+        convert(v, from, to) { return v * this.units[from][1] / this.units[to][1]; }
+      },
+      temperature: {
+        units: { C: ['Celsius', 1], F: ['Fahrenheit', 1], K: ['Kelvin', 1] },
+        convert(v, from, to) {
+          let c = from === 'C' ? v : from === 'F' ? (v - 32) * 5 / 9 : v - 273.15;
+          return to === 'C' ? c : to === 'F' ? c * 9 / 5 + 32 : c + 273.15;
+        }
+      }
+    };
+    function populateUnitSelects() {
+      const set = unitSets[els.unitCategory.value];
+      const html = Object.entries(set.units).map(([key, val]) => `<option value="${key}">${val[0]}</option>`).join('');
+      els.unitFrom.innerHTML = html; els.unitTo.innerHTML = html;
+      if (els.unitTo.options.length > 1) els.unitTo.selectedIndex = 1;
+      updateUnitResult();
+    }
+    function updateUnitResult() {
+      const value = Number(els.unitValue.value);
+      if (!Number.isFinite(value)) { els.unitResult.textContent = 'Enter a valid number.'; return; }
+      const set = unitSets[els.unitCategory.value], result = set.convert(value, els.unitFrom.value, els.unitTo.value);
+      els.unitResult.textContent = `${value} ${els.unitFrom.value} = ${Number(result.toPrecision(10))} ${els.unitTo.value}`;
+    }
+    function populateTimeOffsets() {
+      const offsets = [];
+      for (let h = -12; h <= 14; h += .5) offsets.push(h);
+      const format = value => `UTC${value >= 0 ? '+' : ''}${Number.isInteger(value) ? value : value.toFixed(1)}`;
+      const html = offsets.map(v => `<option value="${v}">${format(v)}</option>`).join('');
+      els.timeFrom.innerHTML = html; els.timeTo.innerHTML = html;
+      els.timeFrom.value = '0'; els.timeTo.value = '1'; updateTimeResult();
+    }
+    function updateTimeResult() {
+      const match = /^([0-2]\d):([0-5]\d)$/.exec(els.timeValue.value || '');
+      if (!match) { els.timeResult.textContent = 'Enter a valid time.'; return; }
+      const minutes = Number(match[1]) * 60 + Number(match[2]);
+      const converted = ((minutes - Number(els.timeFrom.value) * 60 + Number(els.timeTo.value) * 60) % 1440 + 1440) % 1440;
+      const h = Math.floor(converted / 60), m = Math.round(converted % 60);
+      els.timeResult.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} (${els.timeTo.options[els.timeTo.selectedIndex].text})`;
+    }
     function removeItem(index) {
       const item = state.items[index]; if (!item || state.processing) return; revokeOutput(item); state.items.splice(index, 1);
-      if (!state.items.length) { state.activeIndex = -1; state.source = null; els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); renderQueue(); return; }
+      if (!state.items.length) { state.activeIndex = -1; state.source = null; els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); state.colorPicker = false; document.body.classList.remove('picker-active'); els.colorPickerPanel.classList.remove('visible'); els.cropPanel.classList.remove('visible'); updateTransformButtons(); renderQueue(); return; }
       const next = Math.min(index, state.items.length - 1); state.activeIndex = -1; renderQueue(); activateItem(next);
     }
     function clearQueue() {
       if (state.processing) return; state.items.forEach(revokeOutput); state.items = []; state.activeIndex = -1; state.source = null; ++loadSequence;
-      els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); renderQueue();
+      els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); state.colorPicker = false; document.body.classList.remove('picker-active'); els.colorPickerPanel.classList.remove('visible'); els.cropPanel.classList.remove('visible'); updateTransformButtons(); renderQueue();
     }
     function chooseFile() { els.fileInput.click(); }
     els.browseBtn.addEventListener('click', e => { e.stopPropagation(); chooseFile(); });
@@ -550,8 +996,24 @@
     ['dragleave','drop'].forEach(type => els.dropzone.addEventListener(type, e => { e.preventDefault(); els.dropzone.classList.remove('dragging'); }));
     els.dropzone.addEventListener('drop', e => addFiles(e.dataTransfer.files));
     els.format.addEventListener('change', syncFormatUI); els.quality.addEventListener('input', () => { els.qualityValue.textContent = els.quality.value + '%'; invalidateAllOutputs(); });
-    els.width.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceWidth) els.height.value = Math.max(1, Math.round(Number(els.width.value) * state.sourceHeight / state.sourceWidth)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); renderQueue(); });
-    els.height.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceHeight) els.width.value = Math.max(1, Math.round(Number(els.height.value) * state.sourceWidth / state.sourceHeight)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); renderQueue(); });
+    els.width.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceWidth) els.height.value = Math.max(1, Math.round(Number(els.width.value) * state.sourceHeight / state.sourceWidth)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); refreshTransformedPreview(); renderQueue(); });
+    els.height.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceHeight) els.width.value = Math.max(1, Math.round(Number(els.height.value) * state.sourceWidth / state.sourceHeight)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); refreshTransformedPreview(); renderQueue(); });
+    els.rotateLeftBtn.addEventListener('click', () => changeTransform('left')); els.rotateRightBtn.addEventListener('click', () => changeTransform('right')); els.flipHBtn.addEventListener('click', () => changeTransform('flipH')); els.flipVBtn.addEventListener('click', () => changeTransform('flipV')); els.resetTransformBtn.addEventListener('click', () => changeTransform('reset'));
+    els.imageCompressTool.addEventListener('click', () => setCompressionPreset('webp', 80, 'Image Compressor'));
+    els.jpegCompressTool.addEventListener('click', () => setCompressionPreset('jpeg', 72, 'JPEG Compressor'));
+    els.pngCompressTool.addEventListener('click', () => setCompressionPreset('png', null, 'PNG Optimizer'));
+    els.resizeTool.addEventListener('click', () => { if (!requireActiveImage()) return; document.getElementById('dimensions-section-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); els.width.focus(); });
+    els.cropTool.addEventListener('click', openCropPanel); els.applyCropBtn.addEventListener('click', applyCrop); els.clearCropBtn.addEventListener('click', clearCrop); els.closeCropBtn.addEventListener('click', () => els.cropPanel.classList.remove('visible'));
+    els.colorPickerTool.addEventListener('click', toggleColorPicker); els.preview.addEventListener('click', pickPreviewColor);
+    els.rotateTool.addEventListener('click', () => changeTransform('right')); els.flipTool.addEventListener('click', () => changeTransform('flipH')); els.enlargeTool.addEventListener('click', enlargeCurrent);
+    els.imagePdfTool.addEventListener('click', () => { if (!requireActiveImage()) return; openUtilityPanel(els.pdfPanel); });
+    els.createPdfBtn.addEventListener('click', createPdfFromActive); els.closePdfBtn.addEventListener('click', closeUtilityPanels);
+    els.zipTool.addEventListener('click', () => openUtilityPanel(els.zipPanel)); els.closeZipBtn.addEventListener('click', closeUtilityPanels); els.createZipBtn.addEventListener('click', createArchiveZip);
+    els.zipInput.addEventListener('change', () => { const n = els.zipInput.files?.length || 0; els.zipFileList.textContent = n ? `${n} file${n === 1 ? '' : 's'} selected.` : 'No files selected.'; });
+    els.unitTool.addEventListener('click', () => { openUtilityPanel(els.unitPanel); populateUnitSelects(); }); els.closeUnitBtn.addEventListener('click', closeUtilityPanels);
+    [els.unitCategory, els.unitFrom, els.unitTo, els.unitValue].forEach(el => el.addEventListener(el === els.unitValue ? 'input' : 'change', () => el === els.unitCategory ? populateUnitSelects() : updateUnitResult()));
+    els.timeTool.addEventListener('click', () => { openUtilityPanel(els.timePanel); populateTimeOffsets(); }); els.closeTimeBtn.addEventListener('click', closeUtilityPanels);
+    [els.timeValue, els.timeFrom, els.timeTo].forEach(el => el.addEventListener(el === els.timeValue ? 'input' : 'change', updateTimeResult));
     els.convertBtn.addEventListener('click', convertQueue); els.downloadAllBtn.addEventListener('click', downloadAll);
     window.addEventListener('beforeunload', () => state.items.forEach(revokeOutput));
     syncFormatUI();

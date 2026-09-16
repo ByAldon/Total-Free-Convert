@@ -18,8 +18,8 @@ jobs:
         shell: bash
         run: |
           test -f dist/index.html
-          test -f dist/assets/tfc-logo.svg
-          test -f dist/assets/tfc-icon.svg
+          test -f dist/assets/tfc-logo.png
+          test -f dist/assets/tfc-icon.png
           test -f dist/assets/tfc-social-preview.png
           ! grep -RInE '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|api[_-]?key[[:space:]]*[:=][[:space:]]*["'"'][^"'"']+)' . \
             --exclude-dir=.git --exclude=ci.yml

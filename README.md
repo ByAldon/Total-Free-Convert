@@ -1,4 +1,4 @@
-<img src="dist/assets/tfc-logo.svg" alt="Total Free Convert" width="294">
+<img src="dist/assets/tfc-logo.png" alt="Total Free Convert" width="520">
 
 # Total Free Convert
 
@@ -35,6 +35,8 @@ TGA input supports uncompressed and RLE true-color (16/24/32-bit) and grayscale
 (8/16-bit) images. Color-mapped TGA is not supported. Other image input depends on
 the browser. Animated input is converted to a still image, not an animation.
 
+The file picker also accepts specialist formats including DJV, EPS, PPM, ART, DPX, WMZ, DDS, HEIC/HEIF, AVIF, PCX, TIFF, EMZ, DIB, DJVU, CBZ/CBR, JXL, ICO, PSB and common camera RAW extensions (ARW, CR2/CR3, NEF, NRW, ORF, RAF, DNG, RW2, SRW, PEF and others). PPM and TGA have built-in decoders. Other specialist formats are browser-dependent and are not advertised as guaranteed support.
+
 This is an image converter. Video, audio, office document, archive and PDF
 conversion are not implemented. Metadata and color profiles are not preserved
 reliably through browser canvas conversion. Do not use it as a metadata scrubber
@@ -56,17 +58,29 @@ No PHP, Node.js, database, special MIME configuration, `.htaccess`, URL rewrites
 build step or server-side image extension is needed. Only ordinary static HTML
 hosting is required. Use HTTPS on public hosting.
 
+
+## Local utility tools
+
+Version 1.3.0 also includes browser-only utility tools that do not upload files:
+
+- Image/JPG to PDF (single image to a one-page PDF)
+- ZIP Creator for arbitrary local files
+- Unit Converter for length, weight, temperature and data size
+- Time Converter between UTC offsets
+
+These tools follow the same privacy model as the image converter: processing happens locally on the device.
+
 ## Windows desktop app
 
 The repository includes the source for a Windows 10/11 (64-bit) desktop wrapper
 and installer. Published binaries can be attached separately to a GitHub Release.
 
 For a normal installation, build the installer and run the generated
-`Total-Free-Convert-Setup-v1.0.1.exe`. For portable use, publish the desktop app
+`Total-Free-Convert-Setup-v1.3.0.exe`. For portable use, publish the desktop app
 and keep the complete publish folder together; `TotalFreeConvert.exe` depends on
 the files beside it.
 
-The desktop app opens the same converter in a private local WebView2 window. Version 1.0.1 is shown in the website footer, the desktop window title and the Windows executable metadata. It
+The desktop app opens the same converter in a private local WebView2 window. Version 1.3.0 is shown in the website footer, the desktop window title and the Windows executable metadata. It
 does not start a web server or console window, and still uses no account,
 database, upload service or internet connection. The Microsoft Edge WebView2
 Runtime is required and is normally already present on supported Windows
@@ -145,3 +159,23 @@ scripts added by a hosting provider are outside the application's control.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Total Free Convert is available under the [MIT license](LICENSE),
 which permits use, modification and redistribution with the license notice.
+
+
+
+## Local image tools
+
+TFC includes local in-browser tools for image compression presets, resizing, exact pixel cropping, color picking, rotation, flipping and 2× enlargement (subject to browser safety limits). These tools use the same local canvas workflow as conversion and do not upload the selected image to a TFC server.
+
+- **Image Compressor** uses a balanced WebP preset.
+- **JPEG Compressor** uses a smaller JPG quality preset.
+- **PNG Optimizer** re-encodes PNG locally; because PNG is lossless, a smaller result is not guaranteed for every file.
+- **Resize / Image Enlarger** change output dimensions locally.
+- **Crop Image** crops an exact pixel rectangle.
+- **Color Picker** reads pixel colors directly from the preview.
+- **Rotate / Flip** transform the selected image before conversion.
+
+Video/audio compression, video crop/trim, GIF creation and advanced PDF editing are not presented as built-in TFC tools because the current privacy-first browser engine does not implement them reliably without adding a larger local conversion engine or sending files to another service.
+
+## External tools
+
+The website includes optional links to ClipSnap (Background Remover, AI Image Generator, Magic Eraser and Generative Fill) and ProPDF (PDF Editor, Sign PDF, Merge PDF and Split PDF). These services are not part of Total Free Convert. Opening them leaves TFC, and the external service's own privacy policy, terms and file-processing practices apply.
