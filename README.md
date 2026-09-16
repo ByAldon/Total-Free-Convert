@@ -59,9 +59,14 @@ build step or server-side image extension is needed. Only ordinary static HTML
 hosting is required. Use HTTPS on public hosting.
 
 
+
+## UI updates in 1.4.0
+
+Version 1.4.0 tidies up the top navigation with grouped dropdown menus for **Convert**, **Compress**, **Tools** and **More** so the growing list of working features is easier to browse. It also adds dedicated favicon assets for a cleaner browser-tab icon.
+
 ## Local utility tools
 
-Version 1.3.0 also includes browser-only utility tools that do not upload files:
+Version 1.4.0 includes browser-only utility tools that do not upload files:
 
 - Image/JPG to PDF (single image to a one-page PDF)
 - ZIP Creator for arbitrary local files
@@ -76,11 +81,11 @@ The repository includes the source for a Windows 10/11 (64-bit) desktop wrapper
 and installer. Published binaries can be attached separately to a GitHub Release.
 
 For a normal installation, build the installer and run the generated
-`Total-Free-Convert-Setup-v1.3.0.exe`. For portable use, publish the desktop app
+`Total-Free-Convert-Setup-v1.4.0.exe`. For portable use, publish the desktop app
 and keep the complete publish folder together; `TotalFreeConvert.exe` depends on
 the files beside it.
 
-The desktop app opens the same converter in a private local WebView2 window. Version 1.3.0 is shown in the website footer, the desktop window title and the Windows executable metadata. It
+The desktop app opens the same converter in a private local WebView2 window. Version 1.4.0 is shown in the website footer, the desktop window title and the Windows executable metadata. It
 does not start a web server or console window, and still uses no account,
 database, upload service or internet connection. The Microsoft Edge WebView2
 Runtime is required and is normally already present on supported Windows

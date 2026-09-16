@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 - 2026-09-16
+
+- Reorganized the header into cleaner grouped dropdown menus for Convert, Compress, Tools and More.
+- Added a clearer menu structure so built-in local tools, utilities and external links are easier to find.
+- Improved browser icon handling with dedicated SVG and 16x16/32x32 favicon assets.
+- Bumped the website, desktop source and installer source to 1.4.0.
+
 ## 1.3.0 - 2026-09-16
 
 - Added a local Image/JPG to PDF tool for single-image PDF export.

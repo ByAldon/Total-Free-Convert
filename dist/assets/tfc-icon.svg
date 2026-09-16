@@ -1,6 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title id="title">Total Free Convert icon</title>
-  <rect width="64" height="64" rx="15" fill="#2563eb"/>
-  <path d="M16 17h32v9H37v25H27V26H16V17Z" fill="#eff6ff"/>
-  <path d="M13 10h18l-5-5 4-4 12 12-12 12-4-4 5-5H13v-6Zm38 44H33l5 5-4 4-12-12 12-12 4 4-5 5h18v6Z" fill="#10b981"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#g)"/>
+  <path d="M17 20h30v7H35v18h-8V27H17z" fill="#fff"/>
+  <path d="M30 27h16v6h-10v4h9v6h-9v6h-6z" fill="#fff" opacity="0.98"/>
 </svg>

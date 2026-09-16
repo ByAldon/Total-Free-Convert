@@ -1,5 +1,5 @@
 #define MyAppName "Total Free Convert"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.4.0"
 #define MyAppPublisher "Total Free Convert contributors"
 #define MyAppExeName "TotalFreeConvert.exe"
 
@@ -23,7 +23,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=yes
 RestartApplications=no
-VersionInfoVersion=1.3.0.0
+VersionInfoVersion=1.4.0.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription={#MyAppName} installer
 
