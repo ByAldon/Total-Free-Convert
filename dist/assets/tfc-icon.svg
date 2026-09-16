@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Total Free Convert icon</title>
+  <rect width="64" height="64" rx="15" fill="#ff965c"/>
+  <path d="M16 17h32v9H37v25H27V26H16V17Z" fill="#191919"/>
+  <path d="M13 10h18l-5-5 4-4 12 12-12 12-4-4 5-5H13v-6Zm38 44H33l5 5-4 4-12-12 12-12 4 4-5 5h18v6Z" fill="#fff7f0"/>
+</svg>

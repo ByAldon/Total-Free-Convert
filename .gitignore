@@ -1,0 +1,18 @@
+# Local hosting identity and credentials
+.openai/
+.sites-runtime/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local outputs, scratch files and dependencies
+work/
+outputs/
+node_modules/
+desktop/**/bin/
+desktop/**/obj/
+*.log
+.DS_Store
+Thumbs.db

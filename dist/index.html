@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Convert images between PNG, JPG, WebP, BMP and TGA directly in your browser.">
+  <meta name="theme-color" content="#191919">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Total Free Convert (TFC)">
+  <meta property="og:description" content="Private image conversion in your browser. No uploads, accounts or database.">
+  <meta property="og:image" content="assets/tfc-social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Total Free Convert (TFC)">
+  <meta name="twitter:description" content="Private image conversion in your browser. No uploads, accounts or database.">
+  <meta name="twitter:image" content="assets/tfc-social-preview.png">
+  <title>Total Free Convert (TFC) — Image Converter</title>
+  <link rel="icon" type="image/svg+xml" href="assets/tfc-icon.svg">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f5f2;
+      --muted: #b3b0ad;
+      --panel: #232323;
+      --panel-2: #303030;
+      --line: #454340;
+      --lime: #ff965c;
+      --lime-dark: #24170f;
+      --danger: #ff7b72;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: #191919; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: #191919;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button, select, input[type="number"] { min-height: 46px; }
+    button { cursor: pointer; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 22px 0 30px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+    nav { display: flex; gap: 24px; }
+    nav a { font-size: .9rem; color: var(--muted); text-decoration: none; }
+    nav a:hover, nav a:focus-visible { color: var(--lime); }
+    .brand { display: flex; align-items: center; text-decoration: none; }
+    .brand-logo { display: block; width: 190px; max-width: 44vw; height: auto; }
+    .privacy { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; }
+    .privacy svg { color: var(--lime); }
+    main { max-width: 940px; margin: auto; display: grid; gap: 20px; }
+    .workspace { display: flex; flex-direction: column; text-align: center; }
+    .controls { padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; scroll-margin-top: 20px; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; align-items: start; }
+    .conversion-action { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; border-top: 1px solid var(--line); padding-top: 18px; }
+    .conversion-action .convert-btn { width: auto; min-width: 200px; }
+    .conversion-action .status { margin: 0; }
+    .eyebrow { margin: 0 0 10px; color: var(--lime); font-size: .78rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.12; letter-spacing: -.045em; }
+    h1 span { color: var(--lime); }
+    .intro { margin: 14px auto 26px; color: var(--muted); max-width: 56ch; }
+    .format-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 16px 0 0; scroll-margin-top: 20px; }
+    .format-strip span { font-family: ui-monospace, monospace; font-size: .78rem; color: var(--muted); border: 1px solid var(--line); padding: 3px 12px; border-radius: 5px; }
+    .queue-panel { margin-top: 16px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .queue-panel[hidden] { display: none; }
+    .queue-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+    .queue-head strong { font-size: .92rem; }
+    .queue-actions { display: flex; gap: 8px; }
+    .queue-action { min-height: 36px; padding: 0 12px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 7px; font-size: .82rem; font-weight: 700; }
+    .queue-list { list-style: none; padding: 0; margin: 0; max-height: 330px; overflow: auto; }
+    .queue-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid #373532; }
+    .queue-item:last-child { border-bottom: 0; }
+    .queue-item.active { background: #2e2b28; box-shadow: inset 3px 0 var(--lime); }
+    .queue-file { min-width: 0; border: 0; background: transparent; color: inherit; padding: 0; text-align: left; }
+    .queue-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+    .queue-meta { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
+    .queue-status { color: var(--muted); }
+    .queue-status.done { color: #9ee37d; }
+    .queue-status.error { color: var(--danger); }
+    .queue-buttons { display: flex; align-items: center; gap: 7px; }
+    .queue-download, .queue-remove { min-height: 34px; border-radius: 7px; font-size: .78rem; font-weight: 750; }
+    .queue-download { border: 0; padding: 0 11px; background: var(--lime); color: var(--lime-dark); }
+    .queue-remove { width: 34px; padding: 0; color: var(--muted); background: transparent; border: 1px solid var(--line); }
+    .dropzone {
+      flex: 1;
+      min-height: 265px;
+      border: 1px dashed #8b6751;
+      border-radius: 12px;
+      background: #282420;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, background-color .2s, transform .2s;
+    }
+    .dropzone.dragging { border-color: var(--lime); background-color: #3b2b21; transform: scale(.995); }
+    .drop-empty { text-align: center; max-width: 390px; }
+    .upload-icon { width: 46px; height: 46px; margin: 0 auto 12px; display: grid; place-items: center; color: var(--lime); }
+    .drop-empty h2 { margin: 0 0 7px; font-size: 1.25rem; }
+    .drop-empty p { margin: 0 0 18px; color: var(--muted); }
+    .browse-btn, .convert-btn, .download-btn, .reset-btn {
+      border: 0; border-radius: 10px; font-weight: 800; padding: 0 18px; transition: transform .15s, opacity .15s, background .15s;
+    }
+    .browse-btn, .convert-btn { background: var(--lime); color: var(--lime-dark); }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:focus-visible, select:focus-visible, input:focus-visible, .dropzone:focus-visible { outline: 3px solid #ff965c; outline-offset: 3px; }
+    button:disabled { cursor: not-allowed; opacity: .42; }
+    .preview-wrap { width: 100%; height: 100%; display: none; grid-template-rows: minmax(260px, 1fr) auto; gap: 14px; }
+    .preview-wrap.visible { display: grid; }
+    .preview-stage {
+      display: grid; place-items: center; min-height: 300px; overflow: hidden; border-radius: 10px;
+      background-color: #d9dce2;
+      background-image: linear-gradient(45deg,#c6c9d0 25%,transparent 25%),linear-gradient(-45deg,#c6c9d0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c6c9d0 75%),linear-gradient(-45deg,transparent 75%,#c6c9d0 75%);
+      background-size: 24px 24px; background-position: 0 0,0 12px,12px -12px,-12px 0;
+    }
+    #preview { max-width: 100%; max-height: 430px; object-fit: contain; display: block; }
+    .filebar { display: flex; text-align: left; align-items: center; justify-content: space-between; gap: 14px; background: #191919; border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; }
+    .file-info { min-width: 0; }
+    .file-name { display: block; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-meta { color: var(--muted); font-size: .82rem; }
+    .reset-btn { color: var(--ink); background: transparent; border: 1px solid var(--line); flex: 0 0 auto; }
+    .controls h2 { margin: 0 0 20px; font-size: 1.12rem; }
+    .field { margin-bottom: 19px; }
+    label, .field-title { display: block; margin-bottom: 8px; color: #d9ddea; font-size: .9rem; font-weight: 700; }
+    select, input[type="number"] { width: 100%; min-width: 0; padding: 0 12px; color: var(--ink); background: #191919; border: 1px solid var(--line); border-radius: 7px; }
+    .dimensions label { min-width: 0; }
+    .format-select { font-weight: 750; }
+    .dimensions { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: end; gap: 8px; }
+    .times { color: var(--muted); text-align: center; padding-bottom: 12px; }
+    .check-row { display: flex; align-items: center; gap: 10px; margin: -4px 0 20px; color: var(--muted); font-size: .9rem; }
+    .check-row input { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: #3b4659; position: relative; margin: 0; transition: .2s; }
+    .check-row input::after { content: ""; position: absolute; width: 16px; height: 16px; top: 3px; left: 3px; border-radius: 50%; background: #fff; transition: .2s; }
+    .check-row input:checked { background: var(--lime); }
+    .check-row input:checked::after { left: 19px; background: #171900; }
+    .quality-head { display: flex; justify-content: space-between; gap: 12px; }
+    .quality-value { color: var(--lime); }
+    input[type="range"] { width: 100%; accent-color: var(--lime); }
+    .format-note { padding: 12px 13px; margin: 2px 0 18px; border-left: 2px solid var(--lime); background: #2e2b28; color: var(--muted); font-size: .875rem; }
+    .convert-btn { width: 100%; min-height: 52px; }
+    .result { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: none; }
+    .result.visible { display: block; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 11px; font-size: .88rem; }
+    .result-size { color: var(--muted); }
+    .download-btn { width: 100%; background: #fff; color: #121826; min-height: 48px; }
+    .download-all-btn { border: 1px solid var(--line); background: transparent; color: var(--text); min-height: 46px; padding: 0 18px; border-radius: 9px; font-weight: 800; cursor: pointer; }
+    .download-all-btn:hover { border-color: var(--lime); }
+    .download-all-btn[hidden] { display: none; }
+    .status { min-height: 24px; margin: 12px 0 0; font-size: .86rem; color: var(--muted); }
+    .status.error { color: var(--danger); }
+    footer { display: flex; justify-content: space-between; gap: 18px; color: var(--muted); font-size: .8rem; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); }
+    @media (max-width: 820px) {
+      .shell { width: min(100% - 20px, 680px); padding-top: 18px; }
+      .privacy span { display: none; }
+      header { flex-wrap: wrap; gap: 16px; }
+      nav { margin-left: auto; gap: 16px; }
+      .privacy { display: none; }
+      .dropzone { min-height: 250px; }
+    }
+    @media (max-width: 460px) {
+      .controls { padding: 16px; }
+      .settings-grid, .conversion-action { grid-template-columns: 1fr; gap: 8px; }
+      .conversion-action .convert-btn { width: 100%; }
+      .conversion-action .status { order: 2; margin-top: 8px; }
+      .queue-item { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+      .queue-buttons { justify-content: flex-end; }
+      nav { gap: 12px; }
+      nav a { font-size: .875rem; }
+      header { margin-bottom: 20px; }
+      .filebar { align-items: flex-start; }
+      footer { flex-direction: column; gap: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="#page-title" aria-label="Total Free Convert home"><img class="brand-logo" src="assets/tfc-logo.svg" alt="Total Free Convert (TFC)"></a>
+      <nav aria-label="Main navigation"><a href="#page-title">Convert</a><a href="#formats">Formats</a><a href="#settings">Settings</a></nav>
+      <div class="privacy"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.8 8.8 7 10 4.2-1.2 7-5.2 7-10V6l-7-3Z" stroke="currentColor" stroke-width="2"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2"/></svg><span>Files stay on your device</span></div>
+    </header>
+
+    <main>
+      <section class="workspace" aria-labelledby="page-title">
+        <p class="eyebrow">Total Free Convert</p>
+        <h1 id="page-title">Your image. <span>A new format.</span></h1>
+        <p class="intro">Convert and resize images right in your browser.<br>No uploads. No account. Just your files.</p>
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose an image or drop one here">
+          <input id="fileInput" type="file" accept="image/*,.tga,.targa" multiple hidden>
+          <div id="emptyState" class="drop-empty">
+            <div class="upload-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <button id="browseBtn" class="browse-btn" type="button">Choose images</button>
+            <p style="margin: 12px 0 0">or drag and drop them here</p>
+          </div>
+          <div id="previewWrap" class="preview-wrap">
+            <div class="preview-stage"><canvas id="preview" aria-label="Selected image preview"></canvas></div>
+            <div class="filebar">
+              <div class="file-info"><span id="fileName" class="file-name"></span><span id="fileMeta" class="file-meta"></span></div>
+              <button id="resetBtn" class="reset-btn" type="button">Add more</button>
+            </div>
+          </div>
+        </div>
+        <div class="format-strip" id="formats" aria-label="Supported output formats"><span>PNG</span><span>JPG</span><span>WEBP</span><span>BMP</span><span>TGA</span></div>
+        <section id="queuePanel" class="queue-panel" hidden aria-labelledby="queueSummary">
+          <div class="queue-head"><strong id="queueSummary">0 files</strong><div class="queue-actions"><button id="addMoreBtn" class="queue-action" type="button">Add files</button><button id="clearQueueBtn" class="queue-action" type="button">Clear all</button></div></div>
+          <ol id="queueList" class="queue-list"></ol>
+        </section>
+      </section>
+
+      <aside id="settings" class="controls" aria-labelledby="settings-title">
+        <h2 id="settings-title">Output settings</h2>
+        <div class="settings-grid">
+        <div>
+        <div class="field">
+          <label for="format">File format</label>
+          <select id="format" class="format-select">
+            <option value="png">PNG — lossless</option>
+            <option value="jpeg">JPG — compact</option>
+            <option value="webp">WebP — modern</option>
+            <option value="bmp">BMP — bitmap</option>
+            <option value="tga">TGA — game &amp; 3D</option>
+          </select>
+        </div>
+        <div id="qualityField" class="field">
+          <div class="quality-head"><label for="quality">Quality</label><span id="qualityValue" class="quality-value">90%</span></div>
+          <input id="quality" type="range" min="10" max="100" value="90">
+        </div>
+        <div id="formatNote" class="format-note">PNG keeps transparency and sharp edges without quality loss.</div>
+        </div>
+        <div>
+        <div class="field">
+          <span class="field-title">Dimensions · current file</span>
+          <div class="dimensions">
+            <label for="width">Width<input id="width" type="number" min="1" max="16384" inputmode="numeric" disabled></label>
+            <span class="times" aria-hidden="true">×</span>
+            <label for="height">Height<input id="height" type="number" min="1" max="16384" inputmode="numeric" disabled></label>
+          </div>
+        </div>
+        <label class="check-row"><input id="lockRatio" type="checkbox" checked><span>Keep aspect ratio</span></label>
+        </div>
+        </div>
+        <div class="conversion-action">
+        <p id="status" class="status" role="status" aria-live="polite">Choose an image to begin.</p>
+        <button id="convertBtn" class="convert-btn" type="button" disabled>Convert queue →</button>
+        <button id="downloadAllBtn" class="download-all-btn" type="button" hidden>Download all (.zip)</button>
+        </div>
+      </aside>
+    </main>
+    <footer><span>No file-count limit · processed one at a time.</span><span>Maximum practical size depends on your browser.</span></footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const els = Object.fromEntries(['dropzone','fileInput','browseBtn','emptyState','previewWrap','preview','fileName','fileMeta','resetBtn','queuePanel','queueSummary','queueList','addMoreBtn','clearQueueBtn','format','width','height','lockRatio','qualityField','quality','qualityValue','formatNote','convertBtn','downloadAllBtn','status'].map(id => [id, $(id)]));
+    const state = { items: [], activeIndex: -1, source: null, sourceWidth: 0, sourceHeight: 0, processing: false };
+    let loadSequence = 0;
+    function validateDimensions(width, height) {
+      if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > 16384 || height > 16384 || width * height > 32000000) {
+        throw new Error('Use dimensions up to 16,384 pixels and 32 megapixels in total.');
+      }
+    }
+    const notes = {
+      png: 'PNG keeps transparency and sharp edges without quality loss.',
+      jpeg: 'JPG creates smaller files. Transparent areas are filled with white.',
+      webp: 'WebP balances image quality and a small file size.',
+      bmp: 'BMP stores uncompressed pixels for broad legacy compatibility.',
+      tga: 'TGA exports 32-bit color with transparency for game and 3D workflows.'
+    };
+    const prettySize = bytes => bytes < 1024 ? bytes + ' B' : bytes < 1048576 ? (bytes / 1024).toFixed(1) + ' KB' : (bytes / 1048576).toFixed(2) + ' MB';
+    const safeBase = name => (name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'converted-image');
+
+    function setStatus(message, error = false) {
+      els.status.textContent = message;
+      els.status.classList.toggle('error', error);
+    }
+    function revokeOutput(item) {
+      if (item.outputUrl) URL.revokeObjectURL(item.outputUrl);
+      item.outputUrl = null; item.outputBlob = null; item.outputName = null;
+      if (item.status === 'done') item.status = 'waiting';
+    }
+    function invalidateAllOutputs() {
+      state.items.forEach(revokeOutput);
+      renderQueue();
+    }
+    function syncFormatUI() {
+      const format = els.format.value;
+      els.formatNote.textContent = notes[format];
+      els.qualityField.hidden = !['jpeg', 'webp'].includes(format);
+      invalidateAllOutputs();
+      if (state.items.length) setStatus(`${state.items.length} file${state.items.length === 1 ? '' : 's'} ready. Processing will run one at a time.`);
+    }
+    function updatePreview(canvas) {
+      const display = els.preview;
+      const max = 1200;
+      const scale = Math.min(1, max / Math.max(canvas.width, canvas.height));
+      display.width = Math.max(1, Math.round(canvas.width * scale));
+      display.height = Math.max(1, Math.round(canvas.height * scale));
+      display.getContext('2d').drawImage(canvas, 0, 0, display.width, display.height);
+    }
+    function canvasFromImage(image, width, height) {
+      validateDimensions(width, height);
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+      return canvas;
+    }
+    async function decodeTga(file) {
+      const data = new Uint8Array(await file.arrayBuffer());
+      if (data.length < 18) throw new Error('This TGA file is incomplete.');
+      const idLength = data[0], colorMapType = data[1], imageType = data[2];
+      const width = data[12] | (data[13] << 8), height = data[14] | (data[15] << 8), depth = data[16], descriptor = data[17];
+      validateDimensions(width, height);
+      const isGray = imageType === 3 || imageType === 11;
+      if (colorMapType !== 0 || ![2,3,10,11].includes(imageType) || !(isGray ? [8,16] : [16,24,32]).includes(depth) || (descriptor & 0xc0)) throw new Error('This TGA variant is not supported. Try an uncompressed or RLE true-color TGA.');
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d'), image = ctx.createImageData(width, height), out = image.data;
+      let offset = 18 + idLength, pixel = 0; const count = width * height, rle = imageType === 10 || imageType === 11, gray = imageType === 3 || imageType === 11;
+      const readPixel = () => {
+        if (offset + depth / 8 > data.length) throw new Error('This TGA file ended unexpectedly.');
+        let r, g, b, a = 255;
+        if (gray) { r = g = b = data[offset++]; if (depth === 16) a = data[offset++]; }
+        else if (depth === 16) { const v = data[offset++] | (data[offset++] << 8); b = (v & 31) * 255 / 31; g = ((v >> 5) & 31) * 255 / 31; r = ((v >> 10) & 31) * 255 / 31; a = (descriptor & 15) ? (v & 0x8000 ? 255 : 0) : 255; }
+        else { b = data[offset++]; g = data[offset++]; r = data[offset++]; if (depth === 32) a = data[offset++]; }
+        if ([r,g,b,a].some(v => v === undefined)) throw new Error('This TGA file ended unexpectedly.');
+        return [r,g,b,a];
+      };
+      const write = rgba => { const x = pixel % width, y0 = Math.floor(pixel / width), top = !!(descriptor & 0x20), right = !!(descriptor & 0x10), x2 = right ? width - 1 - x : x, y2 = top ? y0 : height - 1 - y0, i = (y2 * width + x2) * 4; out[i] = rgba[0]; out[i+1] = rgba[1]; out[i+2] = rgba[2]; out[i+3] = rgba[3]; pixel++; };
+      while (pixel < count) {
+        if (!rle) { write(readPixel()); continue; }
+        const header = data[offset++]; if (header === undefined) throw new Error('This TGA file ended unexpectedly.');
+        const run = (header & 127) + 1;
+        if (pixel + run > count) throw new Error('This TGA file contains an invalid pixel run.');
+        if (header & 128) { const rgba = readPixel(); for (let i = 0; i < run && pixel < count; i++) write(rgba); }
+        else for (let i = 0; i < run && pixel < count; i++) write(readPixel());
+      }
+      ctx.putImageData(image, 0, 0); return canvas;
+    }
+    async function decodeFile(file) {
+      if (/\.(tga|targa)$/i.test(file.name) || /tga/i.test(file.type)) return decodeTga(file);
+      try {
+        const bitmap = await createImageBitmap(file);
+        const canvas = canvasFromImage(bitmap, bitmap.width, bitmap.height); bitmap.close(); return canvas;
+      } catch {
+        const url = URL.createObjectURL(file);
+        try {
+          const image = new Image(); image.decoding = 'async'; image.src = url; await image.decode(); return canvasFromImage(image, image.naturalWidth, image.naturalHeight);
+        } finally { URL.revokeObjectURL(url); }
+      }
+    }
+    function statusLabel(item) {
+      if (item.status === 'processing') return 'Converting…';
+      if (item.status === 'done') return `${item.outputName} · ${prettySize(item.outputBlob.size)}`;
+      if (item.status === 'error') return item.error || 'Conversion failed';
+      return item.width ? `${item.width} × ${item.height} · waiting` : `${prettySize(item.file.size)} · waiting`;
+    }
+    function renderQueue() {
+      els.queuePanel.hidden = state.items.length === 0;
+      els.queueSummary.textContent = `${state.items.length} file${state.items.length === 1 ? '' : 's'} in queue`;
+      els.queueList.replaceChildren();
+      state.items.forEach((item, index) => {
+        const row = document.createElement('li'); row.className = `queue-item${index === state.activeIndex ? ' active' : ''}`;
+        const select = document.createElement('button'); select.type = 'button'; select.className = 'queue-file'; select.disabled = state.processing;
+        const name = document.createElement('span'); name.className = 'queue-name'; name.textContent = item.file.name;
+        const meta = document.createElement('span'); meta.className = `queue-meta queue-status ${item.status}`; meta.textContent = statusLabel(item);
+        select.append(name, meta); select.addEventListener('click', () => activateItem(index));
+        const buttons = document.createElement('div'); buttons.className = 'queue-buttons';
+        if (item.outputUrl) {
+          const download = document.createElement('button'); download.type = 'button'; download.className = 'queue-download'; download.textContent = 'Download';
+          download.addEventListener('click', () => downloadItem(item)); buttons.append(download);
+        }
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'queue-remove'; remove.textContent = '×'; remove.title = `Remove ${item.file.name}`; remove.setAttribute('aria-label', `Remove ${item.file.name}`); remove.disabled = state.processing;
+        remove.addEventListener('click', () => removeItem(index)); buttons.append(remove);
+        row.append(select, buttons); els.queueList.append(row);
+      });
+      els.convertBtn.textContent = state.processing ? 'Converting one at a time…' : `Convert ${state.items.length || ''} file${state.items.length === 1 ? '' : 's'} →`;
+      els.convertBtn.disabled = state.processing || state.items.length === 0;
+      const completed = state.items.filter(item => item.outputBlob).length;
+      els.downloadAllBtn.hidden = completed < 2;
+      els.downloadAllBtn.disabled = state.processing || completed < 2;
+      els.downloadAllBtn.textContent = completed >= 2 ? `Download all ${completed} (.zip)` : 'Download all (.zip)';
+      els.addMoreBtn.disabled = state.processing; els.clearQueueBtn.disabled = state.processing;
+    }
+    async function activateItem(index, processing = false) {
+      const item = state.items[index]; if (!item) return false;
+      const sequence = ++loadSequence; state.activeIndex = index; state.source = null; renderQueue();
+      setStatus(processing ? `Preparing ${index + 1} of ${state.items.length}: ${item.file.name}` : `Reading ${item.file.name}…`);
+      try {
+        if (item.file.size > 64 * 1024 * 1024) throw new Error('File exceeds the 64 MiB per-file safety limit.');
+        const canvas = await decodeFile(item.file);
+        if (sequence !== loadSequence) return false;
+        state.source = canvas; state.sourceWidth = canvas.width; state.sourceHeight = canvas.height;
+        item.width ||= canvas.width; item.height ||= canvas.height; item.targetWidth ||= item.width; item.targetHeight ||= item.height;
+        els.width.value = item.targetWidth; els.height.value = item.targetHeight; els.width.disabled = false; els.height.disabled = false;
+        els.fileName.textContent = item.file.name; els.fileMeta.textContent = `${canvas.width} × ${canvas.height} · ${prettySize(item.file.size)}`;
+        updatePreview(canvas); els.emptyState.hidden = true; els.previewWrap.classList.add('visible'); renderQueue();
+        if (!processing) setStatus(`${state.items.length} file${state.items.length === 1 ? '' : 's'} ready. Select Convert to process them sequentially.`);
+        return true;
+      } catch (error) {
+        if (sequence !== loadSequence) return false;
+        item.status = 'error'; item.error = error.message || 'This image could not be opened.'; renderQueue();
+        if (!processing) setStatus(item.error, true);
+        return false;
+      }
+    }
+    function outputCanvas(item) {
+      const width = Math.max(1, Math.min(16384, Number(item.targetWidth) || state.sourceWidth));
+      const height = Math.max(1, Math.min(16384, Number(item.targetHeight) || state.sourceHeight));
+      validateDimensions(width, height);
+      item.targetWidth = width; item.targetHeight = height; els.width.value = width; els.height.value = height;
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (els.format.value === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); }
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(state.source, 0, 0, width, height); return canvas;
+    }
+    function encodeTga(canvas) {
+      const { width, height } = canvas, rgba = canvas.getContext('2d').getImageData(0, 0, width, height).data;
+      const bytes = new Uint8Array(18 + width * height * 4); bytes[2] = 2; bytes[12] = width & 255; bytes[13] = width >> 8; bytes[14] = height & 255; bytes[15] = height >> 8; bytes[16] = 32; bytes[17] = 0x28;
+      for (let p = 0, o = 18; p < rgba.length; p += 4, o += 4) { bytes[o] = rgba[p+2]; bytes[o+1] = rgba[p+1]; bytes[o+2] = rgba[p]; bytes[o+3] = rgba[p+3]; }
+      return new Blob([bytes], { type: 'image/x-tga' });
+    }
+    function encodeBmp(canvas) {
+      const { width, height } = canvas, rgba = canvas.getContext('2d').getImageData(0, 0, width, height).data, size = 54 + width * height * 4;
+      const buffer = new ArrayBuffer(size), view = new DataView(buffer), bytes = new Uint8Array(buffer);
+      view.setUint16(0, 0x4d42, true); view.setUint32(2, size, true); view.setUint32(10, 54, true); view.setUint32(14, 40, true); view.setInt32(18, width, true); view.setInt32(22, -height, true); view.setUint16(26, 1, true); view.setUint16(28, 32, true); view.setUint32(34, width * height * 4, true);
+      for (let p = 0, o = 54; p < rgba.length; p += 4, o += 4) { bytes[o] = rgba[p+2]; bytes[o+1] = rgba[p+1]; bytes[o+2] = rgba[p]; bytes[o+3] = rgba[p+3]; }
+      return new Blob([buffer], { type: 'image/bmp' });
+    }
+    const canvasBlob = (canvas, type, quality) => new Promise((resolve, reject) => canvas.toBlob(blob => blob && blob.type === type ? resolve(blob) : reject(new Error('Your browser could not create this format. Try PNG or JPG.')), type, quality));
+    async function convertQueue() {
+      if (!state.items.length || state.processing) return;
+      state.processing = true; invalidateAllOutputs(); renderQueue(); let converted = 0;
+      for (let index = 0; index < state.items.length; index++) {
+        const item = state.items[index]; item.status = 'processing'; item.error = null; renderQueue();
+        const loaded = await activateItem(index, true);
+        if (!loaded) continue;
+        try {
+          await new Promise(requestAnimationFrame); const canvas = outputCanvas(item), format = els.format.value; let blob;
+          if (format === 'tga') blob = encodeTga(canvas);
+          else if (format === 'bmp') blob = encodeBmp(canvas);
+          else blob = await canvasBlob(canvas, `image/${format}`, Number(els.quality.value) / 100);
+          const ext = format === 'jpeg' ? 'jpg' : format;
+          item.outputBlob = blob; item.outputUrl = URL.createObjectURL(blob); item.outputName = `${safeBase(item.file.name)}.${ext}`; item.status = 'done'; converted++;
+        } catch (error) { item.status = 'error'; item.error = error.message || 'Conversion failed.'; }
+        state.source = null; renderQueue(); await new Promise(requestAnimationFrame);
+      }
+      state.processing = false; renderQueue();
+      const failed = state.items.length - converted;
+      const downloadHint = converted > 1 ? ' Download them individually or save them together as one ZIP.' : ' Use Download to save the result.';
+      setStatus(`${converted} file${converted === 1 ? '' : 's'} converted${failed ? `, ${failed} failed` : ''}.${downloadHint}`, failed > 0);
+    }
+    function addFiles(files) {
+      const additions = Array.from(files || []).map(file => ({ file, status: 'waiting', error: null, width: 0, height: 0, targetWidth: 0, targetHeight: 0, outputBlob: null, outputUrl: null, outputName: null }));
+      if (!additions.length) return;
+      const firstNew = state.items.length; state.items.push(...additions); els.fileInput.value = ''; renderQueue(); activateItem(firstNew);
+    }
+    function downloadItem(item) {
+      if (!item.outputUrl) return; const link = document.createElement('a'); link.href = item.outputUrl; link.download = item.outputName; document.body.appendChild(link); link.click(); link.remove();
+    }
+    const crcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = (c & 1) ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+        table[n] = c >>> 0;
+      }
+      return table;
+    })();
+    function crc32(bytes) {
+      let crc = 0xffffffff;
+      for (const byte of bytes) crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+    function zipDateTime(date = new Date()) {
+      const year = Math.max(1980, date.getFullYear());
+      return {
+        time: (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1),
+        date: ((year - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate()
+      };
+    }
+    function uniqueZipName(name, used) {
+      const clean = (name || 'converted-file').replace(/[\/:*?"<>|]/g, '-');
+      const dot = clean.lastIndexOf('.');
+      const base = dot > 0 ? clean.slice(0, dot) : clean;
+      const ext = dot > 0 ? clean.slice(dot) : '';
+      let candidate = clean, counter = 2;
+      while (used.has(candidate.toLowerCase())) candidate = `${base}-${counter++}${ext}`;
+      used.add(candidate.toLowerCase());
+      return candidate;
+    }
+    async function createZipBlob(items) {
+      const encoder = new TextEncoder(), chunks = [], central = [], used = new Set();
+      let offset = 0;
+      const stamp = zipDateTime();
+      for (const item of items) {
+        const data = new Uint8Array(await item.outputBlob.arrayBuffer());
+        const name = uniqueZipName(item.outputName, used), nameBytes = encoder.encode(name), crc = crc32(data);
+        const local = new ArrayBuffer(30 + nameBytes.length), lv = new DataView(local), lb = new Uint8Array(local);
+        lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true); lv.setUint16(8, 0, true);
+        lv.setUint16(10, stamp.time, true); lv.setUint16(12, stamp.date, true); lv.setUint32(14, crc, true);
+        lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true); lv.setUint16(26, nameBytes.length, true); lv.setUint16(28, 0, true); lb.set(nameBytes, 30);
+        chunks.push(local, data);
+        const header = new ArrayBuffer(46 + nameBytes.length), cv = new DataView(header), cb = new Uint8Array(header);
+        cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true);
+        cv.setUint16(12, stamp.time, true); cv.setUint16(14, stamp.date, true); cv.setUint32(16, crc, true);
+        cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true); cv.setUint16(28, nameBytes.length, true); cv.setUint16(30, 0, true); cv.setUint16(32, 0, true);
+        cv.setUint16(34, 0, true); cv.setUint16(36, 0, true); cv.setUint32(38, 0, true); cv.setUint32(42, offset, true); cb.set(nameBytes, 46);
+        central.push(header); offset += local.byteLength + data.byteLength;
+      }
+      const centralOffset = offset, centralSize = central.reduce((sum, part) => sum + part.byteLength, 0), end = new ArrayBuffer(22), ev = new DataView(end);
+      ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true); ev.setUint16(8, items.length, true); ev.setUint16(10, items.length, true);
+      ev.setUint32(12, centralSize, true); ev.setUint32(16, centralOffset, true); ev.setUint16(20, 0, true);
+      return new Blob([...chunks, ...central, end], { type: 'application/zip' });
+    }
+    async function downloadAll() {
+      const completed = state.items.filter(item => item.outputBlob);
+      if (completed.length < 2 || state.processing) return;
+      els.downloadAllBtn.disabled = true; setStatus(`Creating ZIP with ${completed.length} files…`);
+      try {
+        const zip = await createZipBlob(completed), url = URL.createObjectURL(zip), link = document.createElement('a');
+        link.href = url; link.download = `total-free-convert-${completed.length}-files.zip`; document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000); setStatus(`${completed.length} converted files packaged into one ZIP.`);
+      } catch (error) {
+        setStatus(error.message || 'The ZIP file could not be created.', true);
+      } finally { renderQueue(); }
+    }
+    function removeItem(index) {
+      const item = state.items[index]; if (!item || state.processing) return; revokeOutput(item); state.items.splice(index, 1);
+      if (!state.items.length) { state.activeIndex = -1; state.source = null; els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); renderQueue(); return; }
+      const next = Math.min(index, state.items.length - 1); state.activeIndex = -1; renderQueue(); activateItem(next);
+    }
+    function clearQueue() {
+      if (state.processing) return; state.items.forEach(revokeOutput); state.items = []; state.activeIndex = -1; state.source = null; ++loadSequence;
+      els.emptyState.hidden = false; els.previewWrap.classList.remove('visible'); els.width.value = ''; els.height.value = ''; els.width.disabled = true; els.height.disabled = true; setStatus('Choose one or more images to begin.'); renderQueue();
+    }
+    function chooseFile() { els.fileInput.click(); }
+    els.browseBtn.addEventListener('click', e => { e.stopPropagation(); chooseFile(); });
+    els.resetBtn.addEventListener('click', e => { e.stopPropagation(); chooseFile(); });
+    els.addMoreBtn.addEventListener('click', chooseFile); els.clearQueueBtn.addEventListener('click', clearQueue);
+    els.dropzone.addEventListener('click', () => { if (!state.items.length) chooseFile(); });
+    els.dropzone.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !state.items.length) { e.preventDefault(); chooseFile(); } });
+    els.fileInput.addEventListener('change', () => addFiles(els.fileInput.files));
+    ['dragenter','dragover'].forEach(type => els.dropzone.addEventListener(type, e => { e.preventDefault(); els.dropzone.classList.add('dragging'); }));
+    ['dragleave','drop'].forEach(type => els.dropzone.addEventListener(type, e => { e.preventDefault(); els.dropzone.classList.remove('dragging'); }));
+    els.dropzone.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+    els.format.addEventListener('change', syncFormatUI); els.quality.addEventListener('input', () => { els.qualityValue.textContent = els.quality.value + '%'; invalidateAllOutputs(); });
+    els.width.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceWidth) els.height.value = Math.max(1, Math.round(Number(els.width.value) * state.sourceHeight / state.sourceWidth)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); renderQueue(); });
+    els.height.addEventListener('input', () => { const item = state.items[state.activeIndex]; if (!item) return; if (els.lockRatio.checked && state.sourceHeight) els.width.value = Math.max(1, Math.round(Number(els.height.value) * state.sourceWidth / state.sourceHeight)); item.targetWidth = Number(els.width.value); item.targetHeight = Number(els.height.value); revokeOutput(item); renderQueue(); });
+    els.convertBtn.addEventListener('click', convertQueue); els.downloadAllBtn.addEventListener('click', downloadAll);
+    window.addEventListener('beforeunload', () => state.items.forEach(revokeOutput));
+    syncFormatUI();
+
+    if (document.modelContext?.registerTool) {
+      const controller = new AbortController();
+      Promise.resolve(document.modelContext.registerTool({
+        name: 'configure_image_output', title: 'Configure image output',
+        description: 'Set the output format and quality for the conversion queue, plus optional dimensions for the currently selected image.',
+        inputSchema: { type: 'object', properties: { format: { type: 'string', enum: ['png','jpeg','webp','bmp','tga'] }, quality: { type: 'integer', minimum: 10, maximum: 100 }, width: { type: 'integer', minimum: 1, maximum: 16384 }, height: { type: 'integer', minimum: 1, maximum: 16384 } }, required: ['format'], additionalProperties: false },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        execute(input) {
+          if (!input || !['png','jpeg','webp','bmp','tga'].includes(input.format)) throw new Error('Choose a supported output format.');
+          els.format.value = input.format; if (input.quality !== undefined) els.quality.value = input.quality; if (input.width !== undefined) els.width.value = input.width; if (input.height !== undefined) els.height.value = input.height; els.qualityValue.textContent = els.quality.value + '%'; syncFormatUI();
+          return { format: els.format.value, quality: Number(els.quality.value), width: Number(els.width.value) || null, height: Number(els.height.value) || null };
+        }
+      }, { signal: controller.signal })).catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify required web files
+        shell: bash
+        run: |
+          test -f dist/index.html
+          test -f dist/assets/tfc-logo.svg
+          test -f dist/assets/tfc-icon.svg
+          test -f dist/assets/tfc-social-preview.png
+          ! grep -RInE '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|api[_-]?key[[:space:]]*[:=][[:space:]]*["'"'][^"'"']+)' . \
+            --exclude-dir=.git --exclude=ci.yml
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore .\desktop\TotalFreeConvert.Desktop\TotalFreeConvert.Desktop.csproj
+
+      - name: Build
+        run: dotnet build .\desktop\TotalFreeConvert.Desktop\TotalFreeConvert.Desktop.csproj -c Release --no-restore
