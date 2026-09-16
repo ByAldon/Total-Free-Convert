@@ -5,6 +5,8 @@
 A free image converter that runs in the visitor's browser. No database, backend,
 account, API key or installation is required. The interface is in English.
 
+**Live demo:** https://totalfreeconvert.life42.nl/
+
 ## Use it
 
 Open `dist/index.html` in a modern browser, choose one or more images, select an
