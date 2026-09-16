@@ -13,7 +13,7 @@ internal sealed class MainForm : Form
     public MainForm(bool smokeTest = false)
     {
         this.smokeTest = smokeTest;
-        Text = "Total Free Convert (TFC)";
+        Text = $"Total Free Convert — v{Application.ProductVersion}";
         StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = new Size(760, 620);
         ClientSize = new Size(1180, 780);

@@ -2,6 +2,14 @@
 
 All notable changes to Total Free Convert are documented here.
 
+## 1.0.1 - 2026-09-16
+
+- Added multi-file **Download all (.zip)** support.
+- Refreshed the interface with a light white theme and blue/green accents.
+- Updated visible branding to **Total Free Convert**.
+- Added the live demo link to the README.
+- Added visible website and Windows application version information.
+
 ## 1.0.0 - 2026-09-16
 
 ### Added

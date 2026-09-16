@@ -4,39 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Convert images between PNG, JPG, WebP, BMP and TGA directly in your browser.">
-  <meta name="theme-color" content="#191919">
+  <meta name="theme-color" content="#ffffff">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Total Free Convert (TFC)">
+  <meta property="og:title" content="Total Free Convert">
   <meta property="og:description" content="Private image conversion in your browser. No uploads, accounts or database.">
   <meta property="og:image" content="assets/tfc-social-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Total Free Convert (TFC)">
+  <meta name="twitter:title" content="Total Free Convert">
   <meta name="twitter:description" content="Private image conversion in your browser. No uploads, accounts or database.">
   <meta name="twitter:image" content="assets/tfc-social-preview.png">
-  <title>Total Free Convert (TFC) — Image Converter</title>
+  <title>Total Free Convert — Image Converter</title>
   <link rel="icon" type="image/svg+xml" href="assets/tfc-icon.svg">
   <style>
     :root {
-      color-scheme: dark;
-      --ink: #f7f5f2;
-      --muted: #b3b0ad;
-      --panel: #232323;
-      --panel-2: #303030;
-      --line: #454340;
-      --lime: #ff965c;
-      --lime-dark: #24170f;
-      --danger: #ff7b72;
+      color-scheme: light;
+      --ink: #132238;
+      --muted: #5d6b7b;
+      --panel: #ffffff;
+      --panel-2: #f3f7fb;
+      --line: #d8e2ec;
+      --lime: #2563eb;
+      --lime-dark: #ffffff;
+      --accent-2: #10b981;
+      --danger: #dc2626;
       --radius: 18px;
     }
     * { box-sizing: border-box; }
-    html { min-width: 320px; background: #191919; }
+    html { min-width: 320px; background: #ffffff; }
     body {
       margin: 0;
       min-height: 100vh;
       color: var(--ink);
-      background: #191919;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 16px;
       line-height: 1.5;
@@ -45,9 +46,9 @@
     button, select, input[type="number"] { min-height: 46px; }
     button { cursor: pointer; }
     .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 22px 0 30px; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--line); margin-bottom: 32px; background: rgba(255,255,255,.88); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
     nav { display: flex; gap: 24px; }
-    nav a { font-size: .9rem; color: var(--muted); text-decoration: none; }
+    nav a { font-size: .9rem; color: var(--muted); text-decoration: none; font-weight: 600; }
     nav a:hover, nav a:focus-visible { color: var(--lime); }
     .brand { display: flex; align-items: center; text-decoration: none; }
     .brand-logo { display: block; width: 190px; max-width: 44vw; height: auto; }
@@ -55,7 +56,7 @@
     .privacy svg { color: var(--lime); }
     main { max-width: 940px; margin: auto; display: grid; gap: 20px; }
     .workspace { display: flex; flex-direction: column; text-align: center; }
-    .controls { padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; scroll-margin-top: 20px; }
+    .controls { padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; scroll-margin-top: 20px; box-shadow: 0 20px 45px rgba(37,99,235,.08); }
     .settings-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; align-items: start; }
     .conversion-action { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; border-top: 1px solid var(--line); padding-top: 18px; }
     .conversion-action .convert-btn { width: auto; min-width: 200px; }
@@ -66,21 +67,21 @@
     .intro { margin: 14px auto 26px; color: var(--muted); max-width: 56ch; }
     .format-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 16px 0 0; scroll-margin-top: 20px; }
     .format-strip span { font-family: ui-monospace, monospace; font-size: .78rem; color: var(--muted); border: 1px solid var(--line); padding: 3px 12px; border-radius: 5px; }
-    .queue-panel { margin-top: 16px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .queue-panel { margin-top: 16px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 45px rgba(19,34,56,.06); }
     .queue-panel[hidden] { display: none; }
     .queue-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
     .queue-head strong { font-size: .92rem; }
     .queue-actions { display: flex; gap: 8px; }
     .queue-action { min-height: 36px; padding: 0 12px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 7px; font-size: .82rem; font-weight: 700; }
     .queue-list { list-style: none; padding: 0; margin: 0; max-height: 330px; overflow: auto; }
-    .queue-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid #373532; }
+    .queue-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid #e7eef5; }
     .queue-item:last-child { border-bottom: 0; }
-    .queue-item.active { background: #2e2b28; box-shadow: inset 3px 0 var(--lime); }
+    .queue-item.active { background: #edf4ff; box-shadow: inset 3px 0 var(--lime); }
     .queue-file { min-width: 0; border: 0; background: transparent; color: inherit; padding: 0; text-align: left; }
     .queue-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
     .queue-meta { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
     .queue-status { color: var(--muted); }
-    .queue-status.done { color: #9ee37d; }
+    .queue-status.done { color: var(--accent-2); }
     .queue-status.error { color: var(--danger); }
     .queue-buttons { display: flex; align-items: center; gap: 7px; }
     .queue-download, .queue-remove { min-height: 34px; border-radius: 7px; font-size: .78rem; font-weight: 750; }
@@ -89,9 +90,9 @@
     .dropzone {
       flex: 1;
       min-height: 265px;
-      border: 1px dashed #8b6751;
-      border-radius: 12px;
-      background: #282420;
+      border: 2px dashed #bfd3f2;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f2f8ff 100%);
       display: grid;
       place-items: center;
       padding: 20px;
@@ -99,7 +100,7 @@
       overflow: hidden;
       transition: border-color .2s, background-color .2s, transform .2s;
     }
-    .dropzone.dragging { border-color: var(--lime); background-color: #3b2b21; transform: scale(.995); }
+    .dropzone.dragging { border-color: var(--lime); background-color: #eaf2ff; transform: scale(.995); }
     .drop-empty { text-align: center; max-width: 390px; }
     .upload-icon { width: 46px; height: 46px; margin: 0 auto 12px; display: grid; place-items: center; color: var(--lime); }
     .drop-empty h2 { margin: 0 0 7px; font-size: 1.25rem; }
@@ -107,9 +108,9 @@
     .browse-btn, .convert-btn, .download-btn, .reset-btn {
       border: 0; border-radius: 10px; font-weight: 800; padding: 0 18px; transition: transform .15s, opacity .15s, background .15s;
     }
-    .browse-btn, .convert-btn { background: var(--lime); color: var(--lime-dark); }
+    .browse-btn, .convert-btn { background: linear-gradient(135deg, var(--lime), var(--accent-2)); color: var(--lime-dark); box-shadow: 0 10px 24px rgba(37,99,235,.24); }
     button:hover:not(:disabled) { transform: translateY(-1px); }
-    button:focus-visible, select:focus-visible, input:focus-visible, .dropzone:focus-visible { outline: 3px solid #ff965c; outline-offset: 3px; }
+    button:focus-visible, select:focus-visible, input:focus-visible, .dropzone:focus-visible { outline: 3px solid rgba(37,99,235,.4); outline-offset: 3px; }
     button:disabled { cursor: not-allowed; opacity: .42; }
     .preview-wrap { width: 100%; height: 100%; display: none; grid-template-rows: minmax(260px, 1fr) auto; gap: 14px; }
     .preview-wrap.visible { display: grid; }
@@ -120,35 +121,35 @@
       background-size: 24px 24px; background-position: 0 0,0 12px,12px -12px,-12px 0;
     }
     #preview { max-width: 100%; max-height: 430px; object-fit: contain; display: block; }
-    .filebar { display: flex; text-align: left; align-items: center; justify-content: space-between; gap: 14px; background: #191919; border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; }
+    .filebar { display: flex; text-align: left; align-items: center; justify-content: space-between; gap: 14px; background: #f7fbff; border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; }
     .file-info { min-width: 0; }
     .file-name { display: block; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .file-meta { color: var(--muted); font-size: .82rem; }
     .reset-btn { color: var(--ink); background: transparent; border: 1px solid var(--line); flex: 0 0 auto; }
     .controls h2 { margin: 0 0 20px; font-size: 1.12rem; }
     .field { margin-bottom: 19px; }
-    label, .field-title { display: block; margin-bottom: 8px; color: #d9ddea; font-size: .9rem; font-weight: 700; }
-    select, input[type="number"] { width: 100%; min-width: 0; padding: 0 12px; color: var(--ink); background: #191919; border: 1px solid var(--line); border-radius: 7px; }
+    label, .field-title { display: block; margin-bottom: 8px; color: #1f3555; font-size: .9rem; font-weight: 700; }
+    select, input[type="number"] { width: 100%; min-width: 0; padding: 0 12px; color: var(--ink); background: #ffffff; border: 1px solid var(--line); border-radius: 10px; }
     .dimensions label { min-width: 0; }
     .format-select { font-weight: 750; }
     .dimensions { display: grid; grid-template-columns: 1fr 18px 1fr; align-items: end; gap: 8px; }
     .times { color: var(--muted); text-align: center; padding-bottom: 12px; }
     .check-row { display: flex; align-items: center; gap: 10px; margin: -4px 0 20px; color: var(--muted); font-size: .9rem; }
-    .check-row input { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: #3b4659; position: relative; margin: 0; transition: .2s; }
+    .check-row input { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: #c7d4e3; position: relative; margin: 0; transition: .2s; }
     .check-row input::after { content: ""; position: absolute; width: 16px; height: 16px; top: 3px; left: 3px; border-radius: 50%; background: #fff; transition: .2s; }
     .check-row input:checked { background: var(--lime); }
-    .check-row input:checked::after { left: 19px; background: #171900; }
+    .check-row input:checked::after { left: 19px; background: #ffffff; }
     .quality-head { display: flex; justify-content: space-between; gap: 12px; }
     .quality-value { color: var(--lime); }
     input[type="range"] { width: 100%; accent-color: var(--lime); }
-    .format-note { padding: 12px 13px; margin: 2px 0 18px; border-left: 2px solid var(--lime); background: #2e2b28; color: var(--muted); font-size: .875rem; }
+    .format-note { padding: 12px 13px; margin: 2px 0 18px; border-left: 3px solid var(--lime); background: #eef4ff; color: var(--muted); font-size: .875rem; border-radius: 0 10px 10px 0; }
     .convert-btn { width: 100%; min-height: 52px; }
     .result { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: none; }
     .result.visible { display: block; }
     .result-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 11px; font-size: .88rem; }
     .result-size { color: var(--muted); }
-    .download-btn { width: 100%; background: #fff; color: #121826; min-height: 48px; }
-    .download-all-btn { border: 1px solid var(--line); background: transparent; color: var(--text); min-height: 46px; padding: 0 18px; border-radius: 9px; font-weight: 800; cursor: pointer; }
+    .download-btn { width: 100%; background: #132238; color: #ffffff; min-height: 48px; }
+    .download-all-btn { border: 1px solid var(--line); background: #ffffff; color: var(--ink); min-height: 46px; padding: 0 18px; border-radius: 10px; font-weight: 800; cursor: pointer; }
     .download-all-btn:hover { border-color: var(--lime); }
     .download-all-btn[hidden] { display: none; }
     .status { min-height: 24px; margin: 12px 0 0; font-size: .86rem; color: var(--muted); }
@@ -181,7 +182,7 @@
 <body>
   <div class="shell">
     <header>
-      <a class="brand" href="#page-title" aria-label="Total Free Convert home"><img class="brand-logo" src="assets/tfc-logo.svg" alt="Total Free Convert (TFC)"></a>
+      <a class="brand" href="#page-title" aria-label="Total Free Convert home"><img class="brand-logo" src="assets/tfc-logo.svg" alt="Total Free Convert"></a>
       <nav aria-label="Main navigation"><a href="#page-title">Convert</a><a href="#formats">Formats</a><a href="#settings">Settings</a></nav>
       <div class="privacy"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.8 8.8 7 10 4.2-1.2 7-5.2 7-10V6l-7-3Z" stroke="currentColor" stroke-width="2"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2"/></svg><span>Files stay on your device</span></div>
     </header>
@@ -252,7 +253,7 @@
         </div>
       </aside>
     </main>
-    <footer><span>No file-count limit · processed one at a time.</span><span>Maximum practical size depends on your browser.</span></footer>
+    <footer><span>No file-count limit · processed one at a time.</span><span>Version 1.0.1 · Maximum practical size depends on your browser.</span></footer>
   </div>
 
   <script>

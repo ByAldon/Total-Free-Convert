@@ -1,6 +1,6 @@
-<img src="dist/assets/tfc-logo.svg" alt="Total Free Convert (TFC)" width="294">
+<img src="dist/assets/tfc-logo.svg" alt="Total Free Convert" width="294">
 
-# Total Free Convert (TFC)
+# Total Free Convert
 
 A free image converter that runs in the visitor's browser. No database, backend,
 account, API key or installation is required. The interface is in English.
@@ -62,11 +62,11 @@ The repository includes the source for a Windows 10/11 (64-bit) desktop wrapper
 and installer. Published binaries can be attached separately to a GitHub Release.
 
 For a normal installation, build the installer and run the generated
-`Total-Free-Convert-Setup-v1.0.0.exe`. For portable use, publish the desktop app
+`Total-Free-Convert-Setup-v1.0.1.exe`. For portable use, publish the desktop app
 and keep the complete publish folder together; `TotalFreeConvert.exe` depends on
 the files beside it.
 
-The desktop app opens the same converter in a private local WebView2 window. It
+The desktop app opens the same converter in a private local WebView2 window. Version 1.0.1 is shown in the website footer, the desktop window title and the Windows executable metadata. It
 does not start a web server or console window, and still uses no account,
 database, upload service or internet connection. The Microsoft Edge WebView2
 Runtime is required and is normally already present on supported Windows
@@ -143,5 +143,5 @@ scripts added by a hosting provider are outside the application's control.
 
 ## Contributing and license
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). TFC is available under the [MIT license](LICENSE),
+See [CONTRIBUTING.md](CONTRIBUTING.md). Total Free Convert is available under the [MIT license](LICENSE),
 which permits use, modification and redistribution with the license notice.
