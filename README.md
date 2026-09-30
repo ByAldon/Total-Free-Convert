@@ -1,4 +1,4 @@
-## This application has been moved to another instance. Go to https://gitlab.com/Aldon/total-free-convert for more information.
+## This application has been moved to another instance. No new updates will be posted here. Go to https://gitlab.com/Aldon/total-free-convert for more information.
 
 <img src="dist/assets/tfc-logo.png" alt="Total Free Convert" width="520">
 
